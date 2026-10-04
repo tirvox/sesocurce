@@ -57,8 +57,8 @@ do
         return newcclosure and newcclosure(fn) or fn
     end
 
-    if not getgenv().__LionStartupHooks then
-        getgenv().__LionStartupHooks = true
+    if not getgenv().__SpectreStartupHooks then
+        getgenv().__SpectreStartupHooks = true
         if setthreadidentity then
             pcall(setthreadidentity, 8)
         end
@@ -249,7 +249,7 @@ mainapi.BindingBusy = false
 mainapi.ActiveBindCancel = nil
 mainapi.SuppressModuleClickUntil = 0
 mainapi.SuppressBindToggleUntil = 0
-local Modern = shared.Modern
+local Spectre = shared.Spectre
 
 local cloneref = cloneref or function(obj)
 	return obj
@@ -332,19 +332,19 @@ local function isShootingRange()
     return false
 end
 
-local MenuBlur = Lighting:FindFirstChild("LionMenuBlur")
+local MenuBlur = Lighting:FindFirstChild("SpectreMenuBlur")
 if not MenuBlur or not MenuBlur:IsA("BlurEffect") then
     MenuBlur = Instance.new("BlurEffect")
-    MenuBlur.Name = "LionMenuBlur"
+    MenuBlur.Name = "SpectreMenuBlur"
     MenuBlur.Parent = Lighting
 end
 MenuBlur.Size = 0
 
 local function setMenuBlur(open)
-    local blur = Lighting:FindFirstChild("LionMenuBlur")
+    local blur = Lighting:FindFirstChild("SpectreMenuBlur")
     if not blur or not blur:IsA("BlurEffect") then
         blur = Instance.new("BlurEffect")
-        blur.Name = "LionMenuBlur"
+        blur.Name = "SpectreMenuBlur"
         blur.Parent = Lighting
     end
     blur.Parent = Lighting
@@ -491,7 +491,7 @@ end
 local cloneref = cloneref or function(obj)
 	return obj
 end
-local CONFIG_FOLDER = "Overlay"
+local CONFIG_FOLDER = "Spectre"
 local CONFIG_FILE = CONFIG_FOLDER .. "/config.json"
 
 local function EnsureConfigFolder()
@@ -613,7 +613,7 @@ local function SaveConfig(force)
     _savingConfig = wasSaving and not force
 
     if not ok then
-        warn("[ModernClient] SaveConfig failed:", err)
+        warn("[Spectre] SaveConfig failed:", err)
     end
 end
 
@@ -1081,19 +1081,19 @@ mainapi.DeferredLoad = true
 mainapi.FeatureQueue = {}
 mainapi.FeatureLoadIndex = 0
 mainapi.FeatureLoadComplete = false
-shared.ModernLoading = true
+shared.SpectreLoading = true
 
-local LionWindow, LionTabs = nil, {}
-local LionLibrary, LionThemeManager, LionSaveManager
+local SpectreWindow, SpectreTabs = nil, {}
+local SpectreLibrary, SpectreThemeManager, SpectreSaveManager
 
-local function showLionWindow()
-    if LionWindow and LionWindow.Holder then
-        LionWindow.Holder.Visible = true
+local function showSpectreWindow()
+    if SpectreWindow and SpectreWindow.Holder then
+        SpectreWindow.Holder.Visible = true
     end
-    if LionLibrary and LionLibrary.Toggle then
+    if SpectreLibrary and SpectreLibrary.Toggle then
         pcall(function()
-            if LionWindow and LionWindow.Holder and not LionWindow.Holder.Visible then
-                LionLibrary:Toggle()
+            if SpectreWindow and SpectreWindow.Holder and not SpectreWindow.Holder.Visible then
+                SpectreLibrary:Toggle()
             end
         end)
     end
@@ -1121,7 +1121,7 @@ function mainapi:StartBackgroundLoad()
                 if not fn then break end
                 local ok, err = pcall(fn)
                 if not ok then
-                    warn("[LionUI] feature load failed:", err)
+                    warn("[SpectreUI] feature load failed:", err)
                 end
                 if os.clock() - start > 0.012 then
                     break
@@ -1133,8 +1133,8 @@ function mainapi:StartBackgroundLoad()
         self.DeferredLoad = false
         self.FeatureLoadComplete = true
         table.clear(queue)
-        showLionWindow()
-        shared.ModernLoading = false
+        showSpectreWindow()
+        shared.SpectreLoading = false
     end)
 end
 
@@ -1434,8 +1434,8 @@ table.insert(mainapi.Connections, RunService.Heartbeat:Connect(function()
     updateChar()
 end))
 
-if shared.Modern then
-    shared.Modern:Uninject()
+if shared.Spectre then
+    shared.Spectre:Uninject()
 end
 
 mainapi.Libraries = {
@@ -1452,8 +1452,8 @@ SoundEffect.PlayOnRemove = true
 
 local Main, ClickGui, Gradient, Gradient2, NotifyList, ArrayList
 local UICornors = {}
-local LionGroupState = { left = {}, right = {} }
-local LionKeybindModules = {
+local SpectreGroupState = { left = {}, right = {} }
+local SpectreKeybindModules = {
     ["Silent Aim"] = true,
     ["Triggerbot"] = true,
     ["Animation Player"] = true,
@@ -1462,7 +1462,7 @@ local LionKeybindModules = {
     ["Speed"] = true,
 }
 
-local function lionId(...)
+local function spectreId(...)
     local out = {}
     for _, item in ipairs({...}) do
         local text = tostring(item or ""):gsub("[^%w_]", "_")
@@ -1471,7 +1471,7 @@ local function lionId(...)
     return table.concat(out, "_")
 end
 
-local function lionDefault(list, value)
+local function spectreDefault(list, value)
     if value == nil then return 1 end
     if typeof(value) == "string" then
         for i, v in ipairs(list or {}) do
@@ -1481,9 +1481,9 @@ local function lionDefault(list, value)
     return value
 end
 
-local function lionCreateBaseGui()
+local function spectreCreateBaseGui()
     Main = Instance.new("Frame")
-    Main.Name = "LionRuntime"
+    Main.Name = "SpectreRuntime"
     Main.Size = UDim2.fromScale(1, 1)
     Main.BackgroundTransparency = 1
     Main.Parent = mainapi.MainScreenGui
@@ -1545,7 +1545,7 @@ local function lionCreateBaseGui()
     arrayLayout.Parent = ArrayList
 end
 
-local function lionRouteModule(catalogName, moduleName)
+local function spectreRouteModule(catalogName, moduleName)
     if moduleName == "Interface" then
         return "settings", "menu", "left"
     elseif moduleName == "Silent Aim" then
@@ -1659,10 +1659,10 @@ local function lionRouteModule(catalogName, moduleName)
     return "misc", moduleName:lower(), "left"
 end
 
-local function lionGetGroup(tabName, groupName, side)
-    local tab = LionTabs[tabName] or LionTabs.misc or LionTabs.main
+local function spectreGetGroup(tabName, groupName, side)
+    local tab = SpectreTabs[tabName] or SpectreTabs.misc or SpectreTabs.main
     local key = tabName .. "::" .. groupName .. "::" .. side
-    local store = side == "right" and LionGroupState.right or LionGroupState.left
+    local store = side == "right" and SpectreGroupState.right or SpectreGroupState.left
     if store[key] then return store[key] end
 
     local group
@@ -1696,8 +1696,8 @@ local function lionGetGroup(tabName, groupName, side)
     return group
 end
 
-local function lionCreateFallbackLibrary(reason)
-    warn("[Overlay] Linoria load failed, using fallback UI:", reason)
+local function spectreCreateFallbackLibrary(reason)
+    warn("[Spectre] UI load failed, using fallback UI:", reason)
 
     Toggles = Toggles or {}
     Options = Options or {}
@@ -1757,7 +1757,7 @@ local function lionCreateFallbackLibrary(reason)
     end
 
     function group:AddLabel(text)
-        return makeOption(Options, "Label_" .. lionId(text), text)
+        return makeOption(Options, "Label_" .. spectreId(text), text)
     end
 
     function group:AddButton(config)
@@ -1811,7 +1811,7 @@ local function lionCreateFallbackLibrary(reason)
     return library, manager, manager
 end
 
-local function lionLoadRemoteModule(url)
+local function spectreLoadRemoteModule(url)
     local ok, result = pcall(function()
         local source = game:HttpGet(url)
         local loader = loadstring(source)
@@ -1828,10 +1828,10 @@ local function lionLoadRemoteModule(url)
     error(tostring(result), 2)
 end
 
-local function lionFixSaveManager(saveManager)
+local function spectreFixSaveManager(saveManager)
     if type(saveManager) ~= "table" then return saveManager end
 
-    local folder = "Overlay"
+    local folder = "Spectre"
     local settingsFolder = folder .. "/settings"
 
     function saveManager:BuildFolderTree()
@@ -1880,7 +1880,7 @@ function mainapi:CreateGUI()
         pcall(setthreadidentity, 8)
     end
 
-    mainapi.MainScreenGui.Name = "Overlay"
+    mainapi.MainScreenGui.Name = "Spectre"
     mainapi.MainScreenGui.ResetOnSpawn = false
     mainapi.MainScreenGui.IgnoreGuiInset = true
     local guiParent = CoreGui
@@ -1891,31 +1891,31 @@ function mainapi:CreateGUI()
         end
     end
     mainapi.MainScreenGui.Parent = guiParent
-    lionCreateBaseGui()
+    spectreCreateBaseGui()
 
     local repo = "https://raw.githubusercontent.com/jmk-arch/RivalsUI/main/"
     local ok, library, themeManager, saveManager = pcall(function()
-        return lionLoadRemoteModule(repo .. "test-branch.lua"),
-            lionLoadRemoteModule(repo .. "addons/ThemeManager.lua"),
-            lionLoadRemoteModule(repo .. "addons/SaveManager.lua")
+        return spectreLoadRemoteModule(repo .. "test-branch.lua"),
+            spectreLoadRemoteModule(repo .. "addons/ThemeManager.lua"),
+            spectreLoadRemoteModule(repo .. "addons/SaveManager.lua")
     end)
 
     if ok and type(library) == "table" then
-        LionLibrary = library
-        LionThemeManager = type(themeManager) == "table" and themeManager or select(2, lionCreateFallbackLibrary("ThemeManager unavailable"))
-        LionSaveManager = type(saveManager) == "table" and saveManager or select(3, lionCreateFallbackLibrary("SaveManager unavailable"))
+        SpectreLibrary = library
+        SpectreThemeManager = type(themeManager) == "table" and themeManager or select(2, spectreCreateFallbackLibrary("ThemeManager unavailable"))
+        SpectreSaveManager = type(saveManager) == "table" and saveManager or select(3, spectreCreateFallbackLibrary("SaveManager unavailable"))
     else
-        LionLibrary, LionThemeManager, LionSaveManager = lionCreateFallbackLibrary(library)
+        SpectreLibrary, SpectreThemeManager, SpectreSaveManager = spectreCreateFallbackLibrary(library)
     end
-    LionSaveManager = lionFixSaveManager(LionSaveManager)
+    SpectreSaveManager = spectreFixSaveManager(SpectreSaveManager)
 
     pcall(function()
-        if LionLibrary.NotificationStyle then
-            LionLibrary.NotificationStyle.Transparency = 0.3
+        if SpectreLibrary.NotificationStyle then
+            SpectreLibrary.NotificationStyle.Transparency = 0.3
         end
 
-        local holder = LionLibrary.NotificationAreaHolder
-        local area = LionLibrary.NotificationArea
+        local holder = SpectreLibrary.NotificationAreaHolder
+        local area = SpectreLibrary.NotificationArea
 
         if holder then
             holder.AnchorPoint = Vector2.new(0.5, 1)
@@ -1931,10 +1931,10 @@ function mainapi:CreateGUI()
             end
         end
 
-        if type(LionLibrary.Notify) == "function" and not LionLibrary.__LionTransparentNotify then
-            local oldNotify = LionLibrary.Notify
-            LionLibrary.__LionTransparentNotify = true
-            LionLibrary.Notify = function(self, text, time, ...)
+        if type(SpectreLibrary.Notify) == "function" and not SpectreLibrary.__SpectreTransparentNotify then
+            local oldNotify = SpectreLibrary.Notify
+            SpectreLibrary.__SpectreTransparentNotify = true
+            SpectreLibrary.Notify = function(self, text, time, ...)
                 local result = {oldNotify(self, text, time, ...)}
 
                 task.spawn(function()
@@ -1954,23 +1954,23 @@ function mainapi:CreateGUI()
         end
     end)
 
-    LionWindow = LionLibrary:CreateWindow({
-        Title = "Spectre Enchantments - https://discord.gg/KXqBHaNXxX",
+    SpectreWindow = SpectreLibrary:CreateWindow({
+        Title = "Spectre Enchantments - https://discord.gg/nope",
         Center = true,
         AutoShow = false,
         TabPadding = 6,
         MenuFadeTime = 0.12,
     })
-    if LionWindow and LionWindow.Holder then
-        LionWindow.Holder.Visible = false
+    if SpectreWindow and SpectreWindow.Holder then
+        SpectreWindow.Holder.Visible = false
         -- 아주 살짝 크게 + 모서리 느낌
         local uiScale = Instance.new("UIScale")
         uiScale.Name = "RuelScale"
         uiScale.Scale = 1.07
-        uiScale.Parent = LionWindow.Holder
+        uiScale.Parent = SpectreWindow.Holder
 
         pcall(function()
-            for _, obj in ipairs(LionWindow.Holder:GetDescendants()) do
+            for _, obj in ipairs(SpectreWindow.Holder:GetDescendants()) do
                 if obj:IsA("UICorner") then
                     local r = obj.CornerRadius
                     if r and r.Offset < 10 then
@@ -1981,27 +1981,27 @@ function mainapi:CreateGUI()
         end)
     end
     pcall(function()
-        mainapi:Clean(LionLibrary:OnEvent("VisibilityChanged"):Connect(function(open)
+        mainapi:Clean(SpectreLibrary:OnEvent("VisibilityChanged"):Connect(function(open)
             mainapi.ClickGuiStatus = open == true
             setMenuBlur(mainapi.ClickGuiStatus)
         end))
     end)
 
-    LionTabs = {
-        main = LionWindow:AddTab("main"),
-        world = LionWindow:AddTab("world"),
-        esp = LionWindow:AddTab("esp"),
-        visuals = LionWindow:AddTab("visuals"),
-        character = LionWindow:AddTab("character"),
-        misc = LionWindow:AddTab("misc"),
-        settings = LionWindow:AddTab("settings"),
+    SpectreTabs = {
+        main = SpectreWindow:AddTab("main"),
+        world = SpectreWindow:AddTab("world"),
+        esp = SpectreWindow:AddTab("esp"),
+        visuals = SpectreWindow:AddTab("visuals"),
+        character = SpectreWindow:AddTab("character"),
+        misc = SpectreWindow:AddTab("misc"),
+        settings = SpectreWindow:AddTab("settings"),
     }
     
-lionGetGroup("main", "triggerbot", "right")
-lionGetGroup("main", "weapons", "right")
+spectreGetGroup("main", "triggerbot", "right")
+spectreGetGroup("main", "weapons", "right")
 
-    if LionLibrary.KeybindFrame then
-        LionLibrary.KeybindFrame.Visible = true
+    if SpectreLibrary.KeybindFrame then
+        SpectreLibrary.KeybindFrame.Visible = true
     end
 
     self.AddCatalog = function(self, arg)
@@ -2014,17 +2014,17 @@ lionGetGroup("main", "weapons", "right")
 
         Catalog.AddModule = function(self, arg)
             local moduleName = arg["Name"] or ""
-            local tabName, groupName, side = lionRouteModule(Catalog.Name, moduleName)
-            local group = lionGetGroup(tabName, groupName, side)
+            local tabName, groupName, side = spectreRouteModule(Catalog.Name, moduleName)
+            local group = spectreGetGroup(tabName, groupName, side)
             local function getOptionGroup(option)
                 if not option["Tab"] then return group end
                 if option["SeparateGroup"] then
-                    return lionGetGroup(tabName, option["Tab"], option["Side"] or "left")
+                    return spectreGetGroup(tabName, option["Tab"], option["Side"] or "left")
                 end
                 local boxName = groupName:match("^([^:]+)::") or groupName
-                return lionGetGroup(tabName, boxName .. "::" .. option["Tab"], side)
+                return spectreGetGroup(tabName, boxName .. "::" .. option["Tab"], side)
             end
-            local toggleId = lionId("Module", Catalog.Name, moduleName, "Enabled")
+            local toggleId = spectreId("Module", Catalog.Name, moduleName, "Enabled")
             local Module = {
                 Name = moduleName,
                 Frame = Instance.new("Frame"),
@@ -2070,7 +2070,7 @@ lionGetGroup("main", "weapons", "right")
                     local moduleColorReady = false
                     if Toggles[toggleId].AddColorPicker and Module.Colors then
                         for i, color in ipairs(Module.Colors) do
-                            Toggles[toggleId]:AddColorPicker(lionId("Color", Module.Name, "enabled", tostring(i)), {
+                            Toggles[toggleId]:AddColorPicker(spectreId("Color", Module.Name, "enabled", tostring(i)), {
                                 Default = color,
                                 Title = Module.Name .. " enabled " .. tostring(i),
                                 Transparency = Module.ColorTransparency and Module.ColorTransparency[i] or 0,
@@ -2091,7 +2091,7 @@ lionGetGroup("main", "weapons", "right")
                         end
                         Module.Value = Module.Colors[1]
                     elseif Toggles[toggleId].AddColorPicker and Module.Value then
-                        Toggles[toggleId]:AddColorPicker(lionId("Color", Module.Name, "enabled"), {
+                        Toggles[toggleId]:AddColorPicker(spectreId("Color", Module.Name, "enabled"), {
                             Default = Module.Value,
                             Title = Module.Name .. " enabled",
                             Callback = function(value)
@@ -2113,8 +2113,8 @@ lionGetGroup("main", "weapons", "right")
 
             local keyPickerId
             local updatingBind = false
-            if not Module.HideEnabled and LionKeybindModules[moduleName] and Toggles and Toggles[toggleId] and Toggles[toggleId].AddKeyPicker then
-                keyPickerId = lionId("Key", Catalog.Name, moduleName)
+            if not Module.HideEnabled and SpectreKeybindModules[moduleName] and Toggles and Toggles[toggleId] and Toggles[toggleId].AddKeyPicker then
+                keyPickerId = spectreId("Key", Catalog.Name, moduleName)
                 local keyConfig = {
                     Default = "None",
                     SyncToggleState = true,
@@ -2179,7 +2179,7 @@ lionGetGroup("main", "weapons", "right")
 
             function Module.AddToggle(self, arg)
                 local optionGroup = getOptionGroup(arg)
-                local id = lionId("Toggle", Module.Name, arg["Name"] or arg["Text"] or "Option")
+                local id = spectreId("Toggle", Module.Name, arg["Name"] or arg["Text"] or "Option")
                 local initialized = false
                 local Toggle = {
                     Name = arg["Name"] or arg["Text"] or "",
@@ -2206,7 +2206,7 @@ lionGetGroup("main", "weapons", "right")
                 toggleObj = toggleObj or (Toggles and Toggles[id])
                 if toggleObj and toggleObj.AddColorPicker and Toggle.Colors then
                     for i, color in ipairs(Toggle.Colors) do
-                        toggleObj:AddColorPicker(lionId("Color", Module.Name, Toggle.Name, tostring(i)), {
+                        toggleObj:AddColorPicker(spectreId("Color", Module.Name, Toggle.Name, tostring(i)), {
                             Default = color,
                             Title = Toggle.Name .. " " .. tostring(i),
                             Transparency = Toggle.ColorTransparency and Toggle.ColorTransparency[i] or 0,
@@ -2227,7 +2227,7 @@ lionGetGroup("main", "weapons", "right")
                     end
                     Toggle.Value = Toggle.Colors[1]
                 elseif toggleObj and toggleObj.AddColorPicker and Toggle.Value then
-                    toggleObj:AddColorPicker(lionId("Color", Module.Name, Toggle.Name), {
+                    toggleObj:AddColorPicker(spectreId("Color", Module.Name, Toggle.Name), {
                         Default = Toggle.Value,
                         Title = Toggle.Name,
                         Callback = function(value)
@@ -2279,7 +2279,7 @@ lionGetGroup("main", "weapons", "right")
                                 if Toggle.ColorTransparency then
                                     Toggle.ColorTransparency[i] = color.Transparency ~= nil and color.Transparency or Toggle.ColorTransparency[i]
                                 end
-                                local colorId = lionId("Color", Module.Name, Toggle.Name, tostring(i))
+                                local colorId = spectreId("Color", Module.Name, Toggle.Name, tostring(i))
                                 if Options and Options[colorId] then
                                     Options[colorId]:SetValueRGB(Toggle.Colors[i])
                                 end
@@ -2298,7 +2298,7 @@ lionGetGroup("main", "weapons", "right")
 
             function Module.AddSlider(self, arg)
                 local optionGroup = getOptionGroup(arg)
-                local id = lionId("Slider", Module.Name, arg["Name"] or "Value")
+                local id = spectreId("Slider", Module.Name, arg["Name"] or "Value")
                 local initialized = false
                 local min = arg["Min"] or arg["min"] or 1
                 local max = arg["Max"] or arg["max"] or 100
@@ -2333,14 +2333,14 @@ lionGetGroup("main", "weapons", "right")
                         pcall(SaveConfig)
                     end,
                 }
-                local parentOption = arg["Parent"] and arg["Parent"]._LionOption
-                local lionOption
+                local parentOption = arg["Parent"] and arg["Parent"]._SpectreOption
+                local spectreOption
                 if parentOption and parentOption.AddSlider then
-                    lionOption = parentOption:AddSlider(id, sliderConfig)
+                    spectreOption = parentOption:AddSlider(id, sliderConfig)
                 else
-                    lionOption = optionGroup:AddSlider(id, sliderConfig)
+                    spectreOption = optionGroup:AddSlider(id, sliderConfig)
                 end
-                Slider._LionOption = lionOption
+                Slider._SpectreOption = spectreOption
                 initialized = true
                 function Slider:Save(tab) tab[Slider.Name] = { Min = Slider.Min, Max = Slider.Max, Value = Slider.Value } end
                 function Slider:Load(tab)
@@ -2355,7 +2355,7 @@ lionGetGroup("main", "weapons", "right")
 
             local function addDropdown(arg)
                 local optionGroup = getOptionGroup(arg)
-                local id = lionId("Dropdown", Module.Name, arg["Name"] or "Value")
+                local id = spectreId("Dropdown", Module.Name, arg["Name"] or "Value")
                 local initialized = false
                 local list = arg["List"] or arg["Values"] or {}
                 local default = arg["Default"] or arg["Value"] or list[1]
@@ -2370,7 +2370,7 @@ lionGetGroup("main", "weapons", "right")
                 local dropdownObj = optionGroup:AddDropdown(id, {
                     Text = arg["Text"] or Dropdown.Name,
                     Values = list,
-                    Default = lionDefault(list, default),
+                    Default = spectreDefault(list, default),
                     Multi = Dropdown.Multi,
                     AllowNull = Dropdown.Multi or arg["AllowNull"] == true,
                     Callback = function(value)
@@ -2415,7 +2415,7 @@ lionGetGroup("main", "weapons", "right")
 
             function Module.AddInputBox(self, arg)
                 local optionGroup = getOptionGroup(arg)
-                local id = lionId("Input", Module.Name, arg["Name"] or arg["Text"] or "Input")
+                local id = spectreId("Input", Module.Name, arg["Name"] or arg["Text"] or "Input")
                 local initialized = false
                 local Input = {
                     Name = arg["Name"] or arg["Text"] or "",
@@ -2458,7 +2458,7 @@ lionGetGroup("main", "weapons", "right")
             end
 
             function Module.AddColorPicker(self, arg)
-                local id = lionId("Color", Module.Name, arg["Name"] or arg["Text"] or "Color")
+                local id = spectreId("Color", Module.Name, arg["Name"] or arg["Text"] or "Color")
                 local initialized = false
                 local Color = {
                     Name = arg["Name"] or arg["Text"] or "Color",
@@ -2526,9 +2526,9 @@ lionGetGroup("main", "weapons", "right")
         return Catalog
     end
 
-    local MenuGroup = LionTabs.settings:AddLeftGroupbox("settings")
+    local MenuGroup = SpectreTabs.settings:AddLeftGroupbox("settings")
     MenuGroup:AddButton({ Text = "Unload", Func = function()
-        if LionLibrary then LionLibrary:Unload() end
+        if SpectreLibrary then SpectreLibrary:Unload() end
         mainapi:Uninject()
     end })
     MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
@@ -2536,7 +2536,7 @@ lionGetGroup("main", "weapons", "right")
         NoUI = true,
         Text = "Menu keybind",
     })
-    LionLibrary.ToggleKeybind = Options.MenuKeybind
+    SpectreLibrary.ToggleKeybind = Options.MenuKeybind
     mainapi.ClickGuiStatus = true
     setMenuBlur(true)
     local lastMenuBlurOpen = true
@@ -2554,8 +2554,8 @@ lionGetGroup("main", "weapons", "right")
         nextMenuBlurCheck = now + 0.15
         local open = mainapi.ClickGuiStatus == true
         pcall(function()
-            if LionWindow and LionWindow.Holder then
-                open = LionWindow.Holder.Visible == true
+            if SpectreWindow and SpectreWindow.Holder then
+                open = SpectreWindow.Holder.Visible == true
                 mainapi.ClickGuiStatus = open
             end
         end)
@@ -2567,22 +2567,22 @@ lionGetGroup("main", "weapons", "right")
     end))
 
     local managerOk, managerErr = pcall(function()
-        LionThemeManager:SetLibrary(LionLibrary)
-        LionSaveManager:SetLibrary(LionLibrary)
-        LionSaveManager:IgnoreThemeSettings()
-        LionSaveManager:SetIgnoreIndexes({ "MenuKeybind" })
-        LionThemeManager:SetFolder("Overlay")
-        LionSaveManager:SetFolder("Overlay")
+        SpectreThemeManager:SetLibrary(SpectreLibrary)
+        SpectreSaveManager:SetLibrary(SpectreLibrary)
+        SpectreSaveManager:IgnoreThemeSettings()
+        SpectreSaveManager:SetIgnoreIndexes({ "MenuKeybind" })
+        SpectreThemeManager:SetFolder("Spectre")
+        SpectreSaveManager:SetFolder("Spectre")
 
-        LionSaveManager.CustomSave = function()
-            if shared.LionCosmeticChanger and shared.LionCosmeticChanger.GetEquipData then
-                return shared.LionCosmeticChanger.GetEquipData()
+        SpectreSaveManager.CustomSave = function()
+            if shared.SpectreCosmeticChanger and shared.SpectreCosmeticChanger.GetEquipData then
+                return shared.SpectreCosmeticChanger.GetEquipData()
             end
             return nil
         end
-        LionSaveManager.CustomLoad = function(data)
-            if shared.LionCosmeticChanger and shared.LionCosmeticChanger.LoadEquipData then
-                shared.LionCosmeticChanger.LoadEquipData(data)
+        SpectreSaveManager.CustomLoad = function(data)
+            if shared.SpectreCosmeticChanger and shared.SpectreCosmeticChanger.LoadEquipData then
+                shared.SpectreCosmeticChanger.LoadEquipData(data)
             end
         end
         
@@ -2601,28 +2601,28 @@ lionGetGroup("main", "weapons", "right")
                 local encodeSuccess, cleanJson = pcall(game:GetService("HttpService").JSONEncode, game:GetService("HttpService"), decoded)
                 
                 if encodeSuccess and isfolder and writefile then
-                    if not isfolder(LionSaveManager.Folder) then makefolder(LionSaveManager.Folder) end
-                    if not isfolder(LionSaveManager.Folder .. '/settings') then makefolder(LionSaveManager.Folder .. '/settings') end
+                    if not isfolder(SpectreSaveManager.Folder) then makefolder(SpectreSaveManager.Folder) end
+                    if not isfolder(SpectreSaveManager.Folder .. '/settings') then makefolder(SpectreSaveManager.Folder .. '/settings') end
                     
-                    local path = LionSaveManager.Folder .. "/settings/[Rage] Rem's Config.json"
+                    local path = SpectreSaveManager.Folder .. "/settings/[Rage] Rem's Config.json"
                     writefile(path, cleanJson)
                 end
             end
         end
         installCommunityConfig()
 
-        LionSaveManager:BuildConfigSection(LionTabs.settings)
+        SpectreSaveManager:BuildConfigSection(SpectreTabs.settings)
         
         if Options and Options.SaveManager_ConfigList then
-            Options.SaveManager_ConfigList:SetValues(LionSaveManager:RefreshConfigList())
+            Options.SaveManager_ConfigList:SetValues(SpectreSaveManager:RefreshConfigList())
         end
         
-        LionThemeManager:ApplyToTab(LionTabs.settings)
+        SpectreThemeManager:ApplyToTab(SpectreTabs.settings)
     end)
     if not managerOk then
-        warn("[Overlay] config UI setup failed:", managerErr)
+        warn("[Spectre] config UI setup failed:", managerErr)
     end
-    -- Keep Linoria configs manual; autoload can fire callbacks before all modules are ready.
+    -- Keep Spectre configs manual; autoload can fire callbacks before all modules are ready.
 end
 mainapi:CreateGUI()
 
@@ -2640,7 +2640,7 @@ local function ApplyConfig()
                             if module.ColorTransparency then
                                 module.ColorTransparency[i] = color.Transparency ~= nil and color.Transparency or module.ColorTransparency[i]
                             end
-                            local colorId = lionId("Color", module.Name, "enabled", tostring(i))
+                            local colorId = spectreId("Color", module.Name, "enabled", tostring(i))
                             if Options and Options[colorId] then
                                 Options[colorId]:SetValueRGB(module.Colors[i])
                             end
@@ -2651,7 +2651,7 @@ local function ApplyConfig()
                     local color = saved.Colors[1]
                     if color.R and color.G and color.B then
                         module.Value = Color3.new(color.R, color.G, color.B)
-                        local colorId = lionId("Color", module.Name, "enabled")
+                        local colorId = spectreId("Color", module.Name, "enabled")
                         if Options and Options[colorId] then
                             Options[colorId]:SetValueRGB(module.Value)
                         end
@@ -3375,8 +3375,8 @@ end
 function mainapi:Load()
     local savecheck = true
 
-    if isfile('Overlay/Config/shared.txt') then
-		local savedata = loadJson('Overlay/Config/shared.txt')
+    if isfile('Spectre/Config/shared.txt') then
+		local savedata = loadJson('Spectre/Config/shared.txt')
 		if not savedata then
 			savedata = {Modules = {}}
 			savecheck = false
@@ -3416,8 +3416,8 @@ function mainapi:Load()
 		end
     end
 
-    if isfile('Overlay/Config/Gui.txt') then
-        local savedata = loadJson('Overlay/Config/Gui.txt')
+    if isfile('Spectre/Config/Gui.txt') then
+        local savedata = loadJson('Spectre/Config/Gui.txt')
         if not savedata then
 			savedata = {}
 		end
@@ -3443,7 +3443,7 @@ function mainapi:Uninject()
     mainapi:Save()
     pcall(setMenuBlur, false)
     pcall(function()
-        local blur = Lighting:FindFirstChild("LionMenuBlur")
+        local blur = Lighting:FindFirstChild("SpectreMenuBlur")
         if blur and blur:IsA("BlurEffect") then
             blur:Destroy()
         end
@@ -3466,11 +3466,11 @@ function mainapi:Uninject()
     mainapi.MainScreenGui:Destroy()
     table.clear(mainapi.Libraries)
     loopClean(mainapi)
-    shared.Modern = nil
+    shared.Spectre = nil
 end
 
 function mainapi:SendChat(Text)
-    game:GetService("TextChatService").TextChannels.RBXSystem:DisplaySystemMessage("<b><font color = \"rgb(150, 150, 150)\">[</font><font color = \"rgb(84, 140, 209)\">Modern Client</font><font color = \"rgb(150, 150, 150)\">]</font></b>: "..Text)
+    game:GetService("TextChatService").TextChannels.RBXSystem:DisplaySystemMessage("<b><font color = \"rgb(150, 150, 150)\">[</font><font color = \"rgb(84, 140, 209)\">Spectre Enhancements</font><font color = \"rgb(150, 150, 150)\">]</font></b>: "..Text)
 end
 local function Bind(message)
     if message.TextSource and message.Status == Enum.TextChatMessageStatus.Sending then
@@ -3510,7 +3510,7 @@ task.spawn(function()
     repeat
         TextChatService.OnIncomingMessage = Bind
         task.wait(1)
-    until not (mainapi.Loaded or shared.ModernLoading)
+    until not (mainapi.Loaded or shared.SpectreLoading)
 end)
 
 
@@ -3749,7 +3749,7 @@ run(function()
     local function ensureCircle()
         if not FillCircleObject then
             FillScreenGui = Instance.new("ScreenGui")
-            FillScreenGui.Name = "__LionSilentFOVFill"
+            FillScreenGui.Name = "__SpectreSilentFOVFill"
             FillScreenGui.IgnoreGuiInset = true
             FillScreenGui.ResetOnSpawn = false
             FillScreenGui.DisplayOrder = 1000000
@@ -3941,7 +3941,7 @@ run(function()
     mainapi:Clean(removeCircle)
     mainapi:Clean(lplr.OnTeleport:Connect(removeCircle))
 
-    _G.LionSilentDeflecting = _G.LionSilentDeflecting or {}
+    _G.SpectreSilentDeflecting = _G.SpectreSilentDeflecting or {}
 
     local function installSilentKatanaTracker()
         local items = lplr:FindFirstChild("PlayerScripts")
@@ -3954,9 +3954,9 @@ run(function()
         if not ok or type(katana) ~= "table" then return false end
         local class = type(rawget(katana, "ReplicateFromServer")) == "function" and katana or getmetatable(katana)
         if type(class) ~= "table" or type(rawget(class, "ReplicateFromServer")) ~= "function" then return false end
-        if rawget(class, "__LionSilentKatanaHook") then return true end
+        if rawget(class, "__SpectreSilentKatanaHook") then return true end
 
-        class.__LionSilentKatanaHook = true
+        class.__SpectreSilentKatanaHook = true
         local oldReplicate = class.ReplicateFromServer
         class.ReplicateFromServer = function(self, action, ...)
             local actionName = tostring(action):lower()
@@ -3970,7 +3970,7 @@ run(function()
                     pcall(function()
                         duration = self.Info and self.Info.DeflectDuration or duration
                     end)
-                    _G.LionSilentDeflecting[player.UserId] = tick() + duration + 0.12
+                    _G.SpectreSilentDeflecting[player.UserId] = tick() + duration + 0.12
                 end
             end
             return oldReplicate(self, action, ...)
@@ -3985,9 +3985,9 @@ run(function()
             if ok and blocked == true then return true end
         end
         local player = typeof(target) == "Instance" and ps:GetPlayerFromCharacter(target)
-        local expires = player and _G.LionSilentDeflecting[player.UserId]
+        local expires = player and _G.SpectreSilentDeflecting[player.UserId]
         if expires and expires > tick() then return true end
-        if player and expires then _G.LionSilentDeflecting[player.UserId] = nil end
+        if player and expires then _G.SpectreSilentDeflecting[player.UserId] = nil end
         return false
     end
 
@@ -5397,20 +5397,20 @@ run(function()
 		Distance = 45,
 	}
 
-	local function isLionMenuOpen()
-		if typeof(LionLibrary) ~= "table" then
+	local function isSpectreMenuOpen()
+		if typeof(SpectreLibrary) ~= "table" then
 			return nil
 		end
 
 		for _, key in ipairs({"Opened", "Open", "Toggled", "IsOpen", "MenuOpen"}) do
-			local value = rawget(LionLibrary, key)
+			local value = rawget(SpectreLibrary, key)
 			if type(value) == "boolean" then
 				return value
 			end
 		end
 
 		for _, key in ipairs({"MainFrame", "Main", "Holder", "Window", "ScreenGui", "Gui"}) do
-			local value = rawget(LionLibrary, key)
+			local value = rawget(SpectreLibrary, key)
 			if typeof(value) == "Instance" then
 				if value:IsA("ScreenGui") then
 					return value.Enabled
@@ -5538,7 +5538,7 @@ run(function()
 
 	local function updateWorldESPPreview()
 		local drawings = ensureESPPreviewDrawings()
-		local menuOpen = isLionMenuOpen()
+		local menuOpen = isSpectreMenuOpen()
 		if not ESPPreview.Wanted or menuOpen == false or not ESPPreview.Model then
 			setESPVisible(drawings, false)
 			return
@@ -5843,13 +5843,13 @@ run(function()
 						obj.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 					end
 				end
-				clone.Name = "LionESPPreviewModel"
+				clone.Name = "SpectreESPPreviewModel"
 				clone:PivotTo(CFrame.new(0, -10000, 0))
 			end
 		end)
 		if not clone then
 			clone = makePreviewDummy(workspace)
-			clone.Name = "LionESPPreviewModel"
+			clone.Name = "SpectreESPPreviewModel"
 			for _, obj in clone:GetDescendants() do
 				if obj:IsA("BasePart") then
 					obj.LocalTransparencyModifier = 1
@@ -6105,7 +6105,7 @@ run(function()
 			local now = os.clock()
 			if now < nextPreviewUpdate then return end
 			nextPreviewUpdate = now + 0.05
-			local menuOpen = isLionMenuOpen()
+			local menuOpen = isSpectreMenuOpen()
 			gui.Visible = ESPPreview.Wanted and menuOpen ~= false
 			if gui.Visible then
 				local ok, err = pcall(updateESPPreview)
@@ -6550,8 +6550,8 @@ run(function()
 		Drawing2D = function()
 			gameCamera = workspace.CurrentCamera or gameCamera
 			if not gameCamera then return end
-			if shared.LionForceFOVEnabled and shared.LionForceFOVValue then
-				gameCamera.FieldOfView = shared.LionForceFOVValue
+			if shared.SpectreForceFOVEnabled and shared.SpectreForceFOVValue then
+				gameCamera.FieldOfView = shared.SpectreForceFOVValue
 			end
 			for ent, EntityESP in Reference do
 				local rootPart = getValidESPRoot(ent, EntityESP)
@@ -6586,7 +6586,7 @@ run(function()
 					EntityESP.Text.Visible = rootVis and ((Name and Name.Enabled) or (Background and Background.Enabled)) or false
 					if EntityESP.Drop then EntityESP.Drop.Visible = EntityESP.Text.Visible end
 					EntityESP.Text.Color = espGradientColor(Name, espPhase, color)
-					EntityESP.Text.Font = shared.LionESPFont == "arial" and 2 or 3
+					EntityESP.Text.Font = shared.SpectreESPFont == "arial" and 2 or 3
 					if EntityESP.Drop then EntityESP.Drop.Font = EntityESP.Text.Font end
 				end
 				if EntityESP.WeaponText then EntityESP.WeaponText.Color = espGradientColor(Weapon, espPhase, color) end
@@ -6674,8 +6674,8 @@ run(function()
 		Drawing3D = function()
 			gameCamera = workspace.CurrentCamera or gameCamera
 			if not gameCamera then return end
-			if shared.LionForceFOVEnabled and shared.LionForceFOVValue then
-				gameCamera.FieldOfView = shared.LionForceFOVValue
+			if shared.SpectreForceFOVEnabled and shared.SpectreForceFOVValue then
+				gameCamera.FieldOfView = shared.SpectreForceFOVValue
 			end
 			for ent, EntityESP in Reference do
 				local rootPart = getValidESPRoot(ent, EntityESP)
@@ -6736,8 +6736,8 @@ run(function()
 		DrawingSkeleton = function()
 			gameCamera = workspace.CurrentCamera or gameCamera
 			if not gameCamera then return end
-			if shared.LionForceFOVEnabled and shared.LionForceFOVValue then
-				gameCamera.FieldOfView = shared.LionForceFOVValue
+			if shared.SpectreForceFOVEnabled and shared.SpectreForceFOVValue then
+				gameCamera.FieldOfView = shared.SpectreForceFOVValue
 			end
 			for ent, EntityESP in Reference do
 				local rootPart = getValidESPRoot(ent, EntityESP)
@@ -6772,13 +6772,13 @@ run(function()
 					if inst:IsA("Model") or inst:IsA("BasePart") or inst:IsA("Folder") then addWorldESP(inst) end
 				end))
 				local nextWorldESPUpdate = 0
-				RunService:BindToRenderStep("LionWorldESP", 2000, function()
+				RunService:BindToRenderStep("SpectreWorldESP", 2000, function()
 					local now = os.clock()
 					if now < nextWorldESPUpdate then return end
 					nextWorldESPUpdate = now + (1 / 60)
 					updateWorldESP()
 				end)
-				ESP:Clean({ Disconnect = function() RunService:UnbindFromRenderStep("LionWorldESP") end })
+				ESP:Clean({ Disconnect = function() RunService:UnbindFromRenderStep("SpectreWorldESP") end })
 				if ESPRemoved[methodused] then
 					ESP:Clean(entitylib:GetEvent("EntityRemoved"):Connect(ESPRemoved[methodused]))
 				end
@@ -6803,10 +6803,10 @@ run(function()
 					end
 				end
 				if ESPLoop[methodused] then
-					RunService:BindToRenderStep("LionPlayerESP", 2000, function()
+					RunService:BindToRenderStep("SpectrePlayerESP", 2000, function()
 						ESPLoop[methodused]()
 					end)
-					ESP:Clean({ Disconnect = function() RunService:UnbindFromRenderStep("LionPlayerESP") end })
+					ESP:Clean({ Disconnect = function() RunService:UnbindFromRenderStep("SpectrePlayerESP") end })
 				end
 			else
 				for inst in pairs(WorldReference) do removeWorldESP(inst) end
@@ -7196,7 +7196,7 @@ run(function()
 			if not high or high.Parent ~= character then
 				if high then high:Destroy() end
 				high = Instance.new("Highlight")
-				high.Name = "__LionESPHighlight"
+				high.Name = "__SpectreESPHighlight"
 				high.Adornee = character
 				high.Parent = character
 				highlights[player] = high
@@ -7214,7 +7214,7 @@ run(function()
 			if not attachment or attachment.Parent ~= root then
 				if attachment then attachment:Destroy() end
 				attachment = Instance.new("Attachment")
-				attachment.Name = "__LionESPEffects"
+				attachment.Name = "__SpectreESPEffects"
 				attachment.Parent = root
 				effects[player] = attachment
 			end
@@ -7275,12 +7275,12 @@ run(function()
 
 	local Customization = Render:AddModule({Name = "ESP Customization", HideEnabled = true})
 	IncludeTeammates = Customization:AddToggle({Name = "include teammates", Function = refreshVisuals})
-	shared.LionESPBoundingMode = shared.LionESPBoundingMode or "fixed"
-	shared.LionESPFixedWidth = shared.LionESPFixedWidth or 100
-	shared.LionESPFont = shared.LionESPFont or "monocraft"
-	BoundingMode = Customization:AddDropdown({Name = "bounding mode", List = {"fixed", "dynamic"}, Default = "fixed", Function = function(value) shared.LionESPBoundingMode = value end})
-	FixedWidth = Customization:AddSlider({Name = "fixed width scale", Min = 25, Max = 250, Default = 100, Suffix = "%", Function = function(value) shared.LionESPFixedWidth = value end})
-	ESPFont = Customization:AddDropdown({Name = "font", List = {"monocraft", "smallest pixel", "monocraft bold", "proggy clean", "proggy tiny", "pixel", "arial", "ubuntu", "tahoma"}, Default = "monocraft", Function = function(value) shared.LionESPFont = value end})
+	shared.SpectreESPBoundingMode = shared.SpectreESPBoundingMode or "fixed"
+	shared.SpectreESPFixedWidth = shared.SpectreESPFixedWidth or 100
+	shared.SpectreESPFont = shared.SpectreESPFont or "monocraft"
+	BoundingMode = Customization:AddDropdown({Name = "bounding mode", List = {"fixed", "dynamic"}, Default = "fixed", Function = function(value) shared.SpectreESPBoundingMode = value end})
+	FixedWidth = Customization:AddSlider({Name = "fixed width scale", Min = 25, Max = 250, Default = 100, Suffix = "%", Function = function(value) shared.SpectreESPFixedWidth = value end})
+	ESPFont = Customization:AddDropdown({Name = "font", List = {"monocraft", "smallest pixel", "monocraft bold", "proggy clean", "proggy tiny", "pixel", "arial", "ubuntu", "tahoma"}, Default = "monocraft", Function = function(value) shared.SpectreESPFont = value end})
 	NameType = Customization:AddDropdown({Name = "name type", List = {"Name", "DisplayName"}, Default = "Name", Function = function(value)
 		local esp = mainapi.Modules.ESP
 		local display = esp and esp.Settings["Use Displayname"]
@@ -7397,7 +7397,7 @@ run(function()
 	local function ensureCircle()
 		if not FillCircleObject then
 			FillScreenGui = Instance.new("ScreenGui")
-			FillScreenGui.Name = "__LionAimAssistFOVFill"
+			FillScreenGui.Name = "__SpectreAimAssistFOVFill"
 			FillScreenGui.IgnoreGuiInset = true
 			FillScreenGui.ResetOnSpawn = false
 			FillScreenGui.DisplayOrder = 1000000
@@ -8952,7 +8952,7 @@ end
 local function isCustomTripmineMeshIgnored(inst)
 	local current = inst
 	while current do
-		if current:GetAttribute("__LionHiddenTripmineMesh") then
+		if current:GetAttribute("__SpectreHiddenTripmineMesh") then
 			return true
 		end
 		local compactName = tostring(current.Name or ""):lower():gsub("[%s_%-%p]", "")
@@ -9020,7 +9020,7 @@ local function removeTripmineMeshAsset(root, assetId)
 	end
 	for _, obj in ipairs(remove) do
 		if obj and obj.Parent then
-			obj:SetAttribute("__LionRemovedTripmineMesh", true)
+			obj:SetAttribute("__SpectreRemovedTripmineMesh", true)
 			obj:Destroy()
 		end
 	end
@@ -9029,7 +9029,7 @@ end
 local function removeCustomTripmineExtraMeshes(root)
 	if typeof(root) ~= "Instance" then return end
 	for _, obj in ipairs(root:GetDescendants()) do
-		if obj:GetAttribute("__LionCustomTripmineExtraMesh") then
+		if obj:GetAttribute("__SpectreCustomTripmineExtraMesh") then
 			obj:Destroy()
 		end
 	end
@@ -9080,7 +9080,7 @@ local function hideDaggerMeshAnchor(part)
 	part.Massless = true
 	pcall(function() part.CastShadow = false end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionDaggerHiddenAnchor", true)
+	part:SetAttribute("__SpectreDaggerHiddenAnchor", true)
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	pcall(function() collectionService:RemoveTag(part, "Wrappable") end)
@@ -9112,12 +9112,12 @@ end
 
 local function createDaggerReplacementMeshPart(anchor, profile)
 	if not (anchor and anchor:IsA("BasePart")) then return false end
-	if anchor:GetAttribute("__LionDaggerReplacementMeshPart") then return true end
+	if anchor:GetAttribute("__SpectreDaggerReplacementMeshPart") then return true end
 
 	local parent = anchor.Parent
 	if not parent then return false end
 	local originalName = anchor.Name
-	anchor.Name = "__LionDaggerAnchor_" .. originalName
+	anchor.Name = "__SpectreDaggerAnchor_" .. originalName
 
 	local replacement = Instance.new("Part")
 	replacement.Name = originalName
@@ -9131,8 +9131,8 @@ local function createDaggerReplacementMeshPart(anchor, profile)
 	replacement.Color = Color3.fromRGB(255, 255, 255)
 	pcall(function() replacement.Material = anchor.Material end)
 	pcall(function() replacement.CastShadow = false end)
-	replacement:SetAttribute("__LionCustomDaggerMesh", true)
-	replacement:SetAttribute("__LionDaggerReplacementMeshPart", true)
+	replacement:SetAttribute("__SpectreCustomDaggerMesh", true)
+	replacement:SetAttribute("__SpectreDaggerReplacementMeshPart", true)
 	replacement:SetAttribute("IgnoreTransparency", true)
 	addReplacementSpecialMesh(replacement, profile)
 	local wrapGroup = anchor:GetAttribute("WrapGroup")
@@ -9147,7 +9147,7 @@ local function createDaggerReplacementMeshPart(anchor, profile)
 	replacement.Parent = parent
 
 	local weld = Instance.new("WeldConstraint")
-	weld.Name = "__LionDaggerReplacementWeld"
+	weld.Name = "__SpectreDaggerReplacementWeld"
 	weld.Part0 = anchor
 	weld.Part1 = replacement
 	weld.Parent = replacement
@@ -9158,7 +9158,7 @@ end
 
 local function applyMeshReplacementToObject(obj, profile)
 	if typeof(obj) ~= "Instance" then return false end
-	if obj:GetAttribute("__LionDaggerReplacementMeshPart") or obj:GetAttribute("__LionDaggerHiddenAnchor") then
+	if obj:GetAttribute("__SpectreDaggerReplacementMeshPart") or obj:GetAttribute("__SpectreDaggerHiddenAnchor") then
 		return false
 	end
 	local part = getMeshLikePart(obj)
@@ -9179,7 +9179,7 @@ local function applyMeshReplacementToObject(obj, profile)
 		if profile.ReplacementSize then
 			pcall(function() obj.Scale = profile.ReplacementSize end)
 		end
-		obj:SetAttribute("__LionCustomDaggerMesh", true)
+		obj:SetAttribute("__SpectreCustomDaggerMesh", true)
 		return true
 	end
 	return false
@@ -9205,8 +9205,8 @@ end
 local function applyDaggerMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getDaggerMeshSignature(profile)
-	if root:GetAttribute("__LionDaggerMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionDaggerMeshSignature") == signature then
+	if root:GetAttribute("__SpectreDaggerMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreDaggerMeshSignature") == signature then
 		return true
 	end
 
@@ -9238,9 +9238,9 @@ local function applyDaggerMeshProfile(root, profile)
 		end
 	end
 
-	root:SetAttribute("__LionDaggerMeshSkin", profile.Skin)
-	root:SetAttribute("__LionDaggerMeshSignature", signature)
-	root:SetAttribute("__LionDaggerMeshCount", replaced)
+	root:SetAttribute("__SpectreDaggerMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreDaggerMeshSignature", signature)
+	root:SetAttribute("__SpectreDaggerMeshCount", replaced)
 	return replaced > 0
 end
 
@@ -9254,7 +9254,7 @@ local function hideSatchelMeshAnchor(part)
 	part.Massless = true
 	pcall(function() part.CastShadow = false end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionSatchelHiddenAnchor", true)
+	part:SetAttribute("__SpectreSatchelHiddenAnchor", true)
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	pcall(function() collectionService:RemoveTag(part, "Wrappable") end)
@@ -9293,13 +9293,13 @@ local function createSatchelReplacementMeshPart(root, profile, anchors)
 	if not parent then return false end
 
 	for _, descendant in ipairs(root:GetDescendants()) do
-		if descendant:GetAttribute("__LionSatchelReplacementMeshPart") then
+		if descendant:GetAttribute("__SpectreSatchelReplacementMeshPart") then
 			descendant:Destroy()
 		end
 	end
 
 	local replacement = Instance.new("Part")
-	replacement.Name = "__LionCustomSatchelReplacement"
+	replacement.Name = "__SpectreCustomSatchelReplacement"
 	replacement.Size = Vector3.new(1, 1, 1)
 	replacement.CFrame = getReplacementAverageCFrame(anchors)
 		* CFrame.new(profile.ReplacementOffset or Vector3.zero)
@@ -9312,8 +9312,8 @@ local function createSatchelReplacementMeshPart(root, profile, anchors)
 	replacement.Color = Color3.fromRGB(255, 255, 255)
 	pcall(function() replacement.Material = anchor.Material end)
 	pcall(function() replacement.CastShadow = false end)
-	replacement:SetAttribute("__LionCustomSatchelMesh", true)
-	replacement:SetAttribute("__LionSatchelReplacementMeshPart", true)
+	replacement:SetAttribute("__SpectreCustomSatchelMesh", true)
+	replacement:SetAttribute("__SpectreSatchelReplacementMeshPart", true)
 	replacement:SetAttribute("IgnoreTransparency", true)
 	addReplacementSpecialMesh(replacement, profile, Vector3.new(1, 1, 1))
 	local wrapGroup = anchor:GetAttribute("WrapGroup")
@@ -9328,15 +9328,15 @@ local function createSatchelReplacementMeshPart(root, profile, anchors)
 	replacement.Parent = parent
 
 	local weld = Instance.new("WeldConstraint")
-	weld.Name = "__LionSatchelReplacementWeld"
+	weld.Name = "__SpectreSatchelReplacementWeld"
 	weld.Part0 = anchor
 	weld.Part1 = replacement
 	weld.Parent = replacement
 
 	for _, part in ipairs(anchors) do
 		if part and part.Parent then
-			if not part.Name:find("__LionSatchelAnchor_", 1, true) then
-				part.Name = "__LionSatchelAnchor_" .. part.Name
+			if not part.Name:find("__SpectreSatchelAnchor_", 1, true) then
+				part.Name = "__SpectreSatchelAnchor_" .. part.Name
 			end
 			hideSatchelMeshAnchor(part)
 		end
@@ -9346,9 +9346,9 @@ end
 
 local function applySatchelReplacementToObject(obj, profile)
 	if typeof(obj) ~= "Instance" then return false end
-	if obj:GetAttribute("__LionSatchelReplacementMeshPart") then return false end
+	if obj:GetAttribute("__SpectreSatchelReplacementMeshPart") then return false end
 	local part = getMeshLikePart(obj)
-	if part and part:GetAttribute("__LionSatchelHiddenAnchor") then return false end
+	if part and part:GetAttribute("__SpectreSatchelHiddenAnchor") then return false end
 	return part and createSatchelReplacementMeshPart(part.Parent or part, profile, { part }) or false
 end
 
@@ -9376,8 +9376,8 @@ end
 local function applySatchelMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getSatchelMeshSignature(profile)
-	if root:GetAttribute("__LionSatchelMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionSatchelMeshSignature") == signature then
+	if root:GetAttribute("__SpectreSatchelMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreSatchelMeshSignature") == signature then
 		return true
 	end
 
@@ -9399,9 +9399,9 @@ local function applySatchelMeshProfile(root, profile)
 
 	local replaced = createSatchelReplacementMeshPart(root, profile, bodyParts) and 1 or 0
 
-	root:SetAttribute("__LionSatchelMeshSkin", profile.Skin)
-	root:SetAttribute("__LionSatchelMeshSignature", signature)
-	root:SetAttribute("__LionSatchelMeshCount", replaced)
+	root:SetAttribute("__SpectreSatchelMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreSatchelMeshSignature", signature)
+	root:SetAttribute("__SpectreSatchelMeshCount", replaced)
 	return replaced > 0
 end
 
@@ -9429,7 +9429,7 @@ end
 
 local function hideRpgMeshPart(part)
 	if not (part and part:IsA("BasePart")) then return false end
-	if part:GetAttribute("__LionRpgHiddenPart") then return true end
+	if part:GetAttribute("__SpectreRpgHiddenPart") then return true end
 	part.Transparency = 1
 	part.LocalTransparencyModifier = 1
 	part.CanCollide = false
@@ -9438,7 +9438,7 @@ local function hideRpgMeshPart(part)
 	part.Massless = true
 	pcall(function() part.CastShadow = false end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionRpgHiddenPart", true)
+	part:SetAttribute("__SpectreRpgHiddenPart", true)
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	part:SetAttribute("WrapGroup", 0)
@@ -9466,16 +9466,16 @@ end
 
 local function applyRpgMeshReplacement(obj, meshId, textureId, profile)
 	local part = getMeshLikePart(obj)
-	if not part or part:GetAttribute("__LionRpgHiddenPart") then return false end
+	if not part or part:GetAttribute("__SpectreRpgHiddenPart") then return false end
 	part.Transparency = 0
 	part.LocalTransparencyModifier = 0
 	part.CanCollide = false
 	part.CanTouch = false
 	part.CanQuery = false
 	part.Massless = true
-	part:SetAttribute("__LionCustomRpgMesh", true)
+	part:SetAttribute("__SpectreCustomRpgMesh", true)
 	part:SetAttribute("IgnoreTransparency", true)
-	if not part:GetAttribute("__LionRpgReplacementAdjusted") then
+	if not part:GetAttribute("__SpectreRpgReplacementAdjusted") then
 		local scale = tonumber(profile and profile.ReplacementScale) or 1
 		if scale ~= 1 then
 			pcall(function()
@@ -9492,7 +9492,7 @@ local function applyRpgMeshReplacement(obj, meshId, textureId, profile)
 				part.CFrame = part.CFrame * rotationCFrameFromDegrees(profile.ReplacementRotation)
 			end)
 		end
-		part:SetAttribute("__LionRpgReplacementAdjusted", true)
+		part:SetAttribute("__SpectreRpgReplacementAdjusted", true)
 	end
 	if obj:IsA("MeshPart") then
 		pcall(function() obj.MeshId = meshId end)
@@ -9532,9 +9532,9 @@ local function applyRpgMeshProfile(root, profile, options)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	options = options or {}
 	local signature = getRpgMeshSignature(profile)
-	if root:GetAttribute("__LionRpgMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionRpgMeshSignature") == signature
-		and root:GetAttribute("__LionRpgRocketVisible") == false then
+	if root:GetAttribute("__SpectreRpgMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreRpgMeshSignature") == signature
+		and root:GetAttribute("__SpectreRpgRocketVisible") == false then
 		return true
 	end
 
@@ -9564,11 +9564,11 @@ local function applyRpgMeshProfile(root, profile, options)
 		applyIfTarget(obj)
 	end
 
-	root:SetAttribute("__LionRpgMeshSkin", profile.Skin)
-	root:SetAttribute("__LionRpgMeshSignature", signature)
-	root:SetAttribute("__LionRpgRocketVisible", false)
-	root:SetAttribute("__LionRpgMeshCount", changed)
-	root:SetAttribute("__LionRpgHiddenCount", removed)
+	root:SetAttribute("__SpectreRpgMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreRpgMeshSignature", signature)
+	root:SetAttribute("__SpectreRpgRocketVisible", false)
+	root:SetAttribute("__SpectreRpgMeshCount", changed)
+	root:SetAttribute("__SpectreRpgHiddenCount", removed)
 	return changed > 0 or removed > 0
 end
 
@@ -9584,11 +9584,11 @@ local function createFistsReplacementPart(part, meshId, textureId, meshScale, ro
 	part.CanTouch = false
 	part.CanQuery = false
 	part.Massless = true
-	part:SetAttribute("__LionFistsHiddenAnchor", true)
+	part:SetAttribute("__SpectreFistsHiddenAnchor", true)
 	part:SetAttribute("IgnoreTransparency", true)
 
 	local replacement = Instance.new("Part")
-	replacement.Name = "__LionCustomFistsMesh"
+	replacement.Name = "__SpectreCustomFistsMesh"
 	replacement.Size = part.Size
 	replacement.CFrame = part.CFrame * rotationCFrameFromDegrees(rotation)
 	replacement.Anchored = false
@@ -9598,7 +9598,7 @@ local function createFistsReplacementPart(part, meshId, textureId, meshScale, ro
 	replacement.Massless = true
 	replacement.Transparency = 0
 	replacement.LocalTransparencyModifier = 0
-	replacement:SetAttribute("__LionCustomFistsMesh", true)
+	replacement:SetAttribute("__SpectreCustomFistsMesh", true)
 	replacement:SetAttribute("IgnoreTransparency", true)
 	replacement.Parent = part
 
@@ -9611,7 +9611,7 @@ local function createFistsReplacementPart(part, meshId, textureId, meshScale, ro
 	mesh.Parent = replacement
 
 	local weld = Instance.new("WeldConstraint")
-	weld.Name = "__LionCustomFistsMeshWeld"
+	weld.Name = "__SpectreCustomFistsMeshWeld"
 	weld.Part0 = part
 	weld.Part1 = replacement
 	weld.Parent = replacement
@@ -9643,9 +9643,9 @@ end
 local function applyFistsMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getFistsMeshSignature(profile)
-	if root:GetAttribute("__LionFistsMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionFistsMeshSignature") == signature
-		and (root:GetAttribute("__LionFistsMeshCount") or 0) > 0 then
+	if root:GetAttribute("__SpectreFistsMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreFistsMeshSignature") == signature
+		and (root:GetAttribute("__SpectreFistsMeshCount") or 0) > 0 then
 		return true
 	end
 
@@ -9659,15 +9659,15 @@ local function applyFistsMeshProfile(root, profile)
 		applied += 1
 	end
 
-	root:SetAttribute("__LionFistsMeshSkin", profile.Skin)
-	root:SetAttribute("__LionFistsMeshSignature", signature)
-	root:SetAttribute("__LionFistsMeshCount", applied)
+	root:SetAttribute("__SpectreFistsMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreFistsMeshSignature", signature)
+	root:SetAttribute("__SpectreFistsMeshCount", applied)
 	return applied > 0
 end
 
 local function hideBowMeshAnchor(part)
 	if not (part and part:IsA("BasePart")) then return false end
-	if part:GetAttribute("__LionBowHiddenAnchor") then return true end
+	if part:GetAttribute("__SpectreBowHiddenAnchor") then return true end
 	part.Transparency = 1
 	part.LocalTransparencyModifier = 1
 	part.CanCollide = false
@@ -9676,7 +9676,7 @@ local function hideBowMeshAnchor(part)
 	part.Massless = true
 	pcall(function() part.CastShadow = false end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionBowHiddenAnchor", true)
+	part:SetAttribute("__SpectreBowHiddenAnchor", true)
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	pcall(function() part:RemoveTag("Wrappable") end)
@@ -9708,7 +9708,7 @@ local function createBowReplacementMeshPart(root, anchors, replacementName, mesh
 	if not parent then return false end
 
 	for _, descendant in ipairs(root:GetDescendants()) do
-		if descendant:GetAttribute("__LionBowReplacementMeshPart") and descendant.Name == replacementName then
+		if descendant:GetAttribute("__SpectreBowReplacementMeshPart") and descendant.Name == replacementName then
 			descendant:Destroy()
 		end
 	end
@@ -9724,8 +9724,8 @@ local function createBowReplacementMeshPart(root, anchors, replacementName, mesh
 	replacement.Massless = true
 	replacement.Transparency = 0
 	replacement.LocalTransparencyModifier = 0
-	replacement:SetAttribute("__LionCustomBowMesh", true)
-	replacement:SetAttribute("__LionBowReplacementMeshPart", true)
+	replacement:SetAttribute("__SpectreCustomBowMesh", true)
+	replacement:SetAttribute("__SpectreBowReplacementMeshPart", true)
 	replacement:SetAttribute("IgnoreTransparency", true)
 
 	local mesh = Instance.new("SpecialMesh")
@@ -9749,7 +9749,7 @@ local function createBowReplacementMeshPart(root, anchors, replacementName, mesh
 
 	if not replacement.Anchored then
 		local weld = Instance.new("WeldConstraint")
-		weld.Name = "__LionBowReplacementWeld"
+		weld.Name = "__SpectreBowReplacementWeld"
 		weld.Part0 = anchor
 		weld.Part1 = replacement
 		weld.Parent = replacement
@@ -9780,9 +9780,9 @@ end
 local function applyBowMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getBowMeshSignature(profile)
-	if root:GetAttribute("__LionBowMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionBowMeshSignature") == signature
-		and (root:GetAttribute("__LionBowMeshCount") or 0) > 0 then
+	if root:GetAttribute("__SpectreBowMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreBowMeshSignature") == signature
+		and (root:GetAttribute("__SpectreBowMeshCount") or 0) > 0 then
 		return true
 	end
 
@@ -9805,16 +9805,16 @@ local function applyBowMeshProfile(root, profile)
 	end
 
 	local applied = 0
-	if createBowReplacementMeshPart(root, bodyParts, "__LionCustomBowBody", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, profile) then
+	if createBowReplacementMeshPart(root, bodyParts, "__SpectreCustomBowBody", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, profile) then
 		applied += 1
 	end
-	if createBowReplacementMeshPart(root, arrowParts, "__LionCustomBowArrow", profile.ArrowReplacementMeshId, profile.ArrowReplacementTextureId, profile) then
+	if createBowReplacementMeshPart(root, arrowParts, "__SpectreCustomBowArrow", profile.ArrowReplacementMeshId, profile.ArrowReplacementTextureId, profile) then
 		applied += 1
 	end
 
-	root:SetAttribute("__LionBowMeshSkin", profile.Skin)
-	root:SetAttribute("__LionBowMeshSignature", signature)
-	root:SetAttribute("__LionBowMeshCount", applied)
+	root:SetAttribute("__SpectreBowMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreBowMeshSignature", signature)
+	root:SetAttribute("__SpectreBowMeshCount", applied)
 	return applied > 0
 end
 
@@ -9828,8 +9828,8 @@ local function hideAssaultRifleMeshAnchor(part, anchorType)
 	part.Massless = true
 	pcall(function() part.CastShadow = false end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionAssaultRifleHiddenAnchor", true)
-	part:SetAttribute("__LionAssaultRifleAnchorType", anchorType or "Part")
+	part:SetAttribute("__SpectreAssaultRifleHiddenAnchor", true)
+	part:SetAttribute("__SpectreAssaultRifleAnchorType", anchorType or "Part")
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	pcall(function() part:RemoveTag("Wrappable") end)
@@ -9875,8 +9875,8 @@ local function createAssaultRifleReplacementMeshPart(root, anchor, replacementNa
 	pcall(function() replacement.TextureID = textureId or "" end)
 	pcall(function() replacement.Material = anchor.Material end)
 	pcall(function() replacement.CastShadow = false end)
-	replacement:SetAttribute("__LionCustomAssaultRifleMesh", true)
-	replacement:SetAttribute("__LionAssaultRifleReplacementMeshPart", true)
+	replacement:SetAttribute("__SpectreCustomAssaultRifleMesh", true)
+	replacement:SetAttribute("__SpectreAssaultRifleReplacementMeshPart", true)
 	replacement:SetAttribute("IgnoreTransparency", true)
 
 	local wrapGroup = anchor:GetAttribute("WrapGroup")
@@ -9892,7 +9892,7 @@ local function createAssaultRifleReplacementMeshPart(root, anchor, replacementNa
 
 	if not replacement.Anchored then
 		local weld = Instance.new("WeldConstraint")
-		weld.Name = "__LionAssaultRifleReplacementWeld"
+		weld.Name = "__SpectreAssaultRifleReplacementWeld"
 		weld.Part0 = anchor
 		weld.Part1 = replacement
 		weld.Parent = replacement
@@ -9932,14 +9932,14 @@ end
 local function applyAssaultRifleMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getAssaultRifleMeshSignature(profile)
-	if root:GetAttribute("__LionAssaultRifleMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionAssaultRifleMeshSignature") == signature
-		and (root:GetAttribute("__LionAssaultRifleMeshCount") or 0) > 0 then
+	if root:GetAttribute("__SpectreAssaultRifleMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreAssaultRifleMeshSignature") == signature
+		and (root:GetAttribute("__SpectreAssaultRifleMeshCount") or 0) > 0 then
 		return true
 	end
 
 	for _, descendant in ipairs(root:GetDescendants()) do
-		if descendant:GetAttribute("__LionAssaultRifleReplacementMeshPart") then
+		if descendant:GetAttribute("__SpectreAssaultRifleReplacementMeshPart") then
 			descendant:Destroy()
 		end
 	end
@@ -9948,7 +9948,7 @@ local function applyAssaultRifleMeshProfile(root, profile)
 	local function collectIfTarget(obj)
 		local part = getMeshLikePart(obj)
 		if not part or seenParts[part] then return end
-		local previousType = part:GetAttribute("__LionAssaultRifleAnchorType")
+		local previousType = part:GetAttribute("__SpectreAssaultRifleAnchorType")
 		local isReloadMagazine = previousType == "ReloadMagazine"
 			or (meshMatchesAnyAssetId(obj, profile.ReloadMagazineMeshIds) and namePathContains(obj, "reload"))
 		if previousType == "Body" or meshMatchesAnyAssetId(obj, profile.BodyMeshIds) then
@@ -9981,13 +9981,13 @@ local function applyAssaultRifleMeshProfile(root, profile)
 	bodyCFrame = bodyCFrame * CFrame.new(replacementOffset)
 	reloadMagazineCFrame = reloadMagazineCFrame * CFrame.new(replacementOffset)
 	local applied = 0
-	if createAssaultRifleReplacementMeshPart(root, bodyAnchor, "__LionCustomAssaultRifleBody", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, bodyCFrame, profile) then
+	if createAssaultRifleReplacementMeshPart(root, bodyAnchor, "__SpectreCustomAssaultRifleBody", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, bodyCFrame, profile) then
 		applied += 1
 	end
-	if createAssaultRifleReplacementMeshPart(root, magazineAnchor, "__LionCustomAssaultRifleMagazine", profile.MagazineReplacementMeshId, profile.MagazineReplacementTextureId, bodyCFrame * CFrame.new(magazineOffset), profile) then
+	if createAssaultRifleReplacementMeshPart(root, magazineAnchor, "__SpectreCustomAssaultRifleMagazine", profile.MagazineReplacementMeshId, profile.MagazineReplacementTextureId, bodyCFrame * CFrame.new(magazineOffset), profile) then
 		applied += 1
 	end
-	if reloadMagazineParts[1] and createAssaultRifleReplacementMeshPart(root, reloadMagazineAnchor, "__LionCustomAssaultRifleReloadMagazine", profile.ReloadMagazineReplacementMeshId or profile.MagazineReplacementMeshId, profile.ReloadMagazineReplacementTextureId or profile.MagazineReplacementTextureId, reloadMagazineCFrame, profile) then
+	if reloadMagazineParts[1] and createAssaultRifleReplacementMeshPart(root, reloadMagazineAnchor, "__SpectreCustomAssaultRifleReloadMagazine", profile.ReloadMagazineReplacementMeshId or profile.MagazineReplacementMeshId, profile.ReloadMagazineReplacementTextureId or profile.MagazineReplacementTextureId, reloadMagazineCFrame, profile) then
 		applied += 1
 	end
 
@@ -10004,13 +10004,13 @@ local function applyAssaultRifleMeshProfile(root, profile)
 		hideAssaultRifleMeshAnchor(part, "Bolt")
 	end
 
-	root:SetAttribute("__LionAssaultRifleMeshSkin", profile.Skin)
-	root:SetAttribute("__LionAssaultRifleMeshSignature", signature)
-	root:SetAttribute("__LionAssaultRifleMeshCount", applied)
+	root:SetAttribute("__SpectreAssaultRifleMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreAssaultRifleMeshSignature", signature)
+	root:SetAttribute("__SpectreAssaultRifleMeshCount", applied)
 	return applied > 0
 end
 
-function __LionHideSniperMeshAnchor(part, anchorType)
+function __SpectreHideSniperMeshAnchor(part, anchorType)
 	if not (part and part:IsA("BasePart")) then return false end
 	part.Transparency = 1
 	part.LocalTransparencyModifier = 1
@@ -10022,9 +10022,9 @@ function __LionHideSniperMeshAnchor(part, anchorType)
 	pcall(function() part.Material = Enum.Material.SmoothPlastic end)
 	pcall(function() part.Reflectance = 0 end)
 	pcall(function() part.Size = Vector3.new(0.001, 0.001, 0.001) end)
-	part:SetAttribute("__LionHiddenSniperMesh", true)
-	part:SetAttribute("__LionCustomSniperHiddenPart", true)
-	part:SetAttribute("__LionSniperAnchorType", anchorType or "Part")
+	part:SetAttribute("__SpectreHiddenSniperMesh", true)
+	part:SetAttribute("__SpectreCustomSniperHiddenPart", true)
+	part:SetAttribute("__SpectreSniperAnchorType", anchorType or "Part")
 	part:SetAttribute("IgnoreObject", true)
 	part:SetAttribute("IgnoreTransparency", true)
 	part:SetAttribute("WrapGroup", 0)
@@ -10050,16 +10050,16 @@ function __LionHideSniperMeshAnchor(part, anchorType)
 	return true
 end
 
-function __LionOffsetSniperVisibleAnchor(part, anchorType, offset)
+function __SpectreOffsetSniperVisibleAnchor(part, anchorType, offset)
 	if not (part and part:IsA("BasePart")) then return false end
-	local originalCFrame = part:GetAttribute("__LionSniperOriginalCFrame")
+	local originalCFrame = part:GetAttribute("__SpectreSniperOriginalCFrame")
 	if typeof(originalCFrame) ~= "CFrame" then
 		originalCFrame = part.CFrame
-		part:SetAttribute("__LionSniperOriginalCFrame", originalCFrame)
+		part:SetAttribute("__SpectreSniperOriginalCFrame", originalCFrame)
 	end
 	part.CFrame = originalCFrame * CFrame.new(offset or Vector3.zero)
-	part:SetAttribute("__LionSniperAnchorType", anchorType or "Part")
-	part:SetAttribute("__LionSniperVisibleOffset", true)
+	part:SetAttribute("__SpectreSniperAnchorType", anchorType or "Part")
+	part:SetAttribute("__SpectreSniperVisibleOffset", true)
 	return true
 end
 
@@ -10073,7 +10073,7 @@ local function hideSniperMeshId(root, assetId)
 		local part = getMeshLikePart(obj)
 		if part and not seen[part] then
 			seen[part] = true
-			if __LionHideSniperMeshAnchor(part) then
+			if __SpectreHideSniperMeshAnchor(part) then
 				table.insert(parts, part)
 			end
 		elseif obj:IsA("SpecialMesh") then
@@ -10099,7 +10099,7 @@ local function getAverageCFrame(parts)
 	return CFrame.new(position) * (first.CFrame - first.CFrame.Position)
 end
 
-function __LionCreateSniperReplacementMeshPart(root, anchor, replacementName, meshId, textureId, cframe, profile)
+function __SpectreCreateSniperReplacementMeshPart(root, anchor, replacementName, meshId, textureId, cframe, profile)
 	if not (anchor and anchor:IsA("BasePart")) then return false end
 	local parent = anchor.Parent or root
 	if not parent then return false end
@@ -10120,7 +10120,7 @@ function __LionCreateSniperReplacementMeshPart(root, anchor, replacementName, me
 	replacement.Color = Color3.fromRGB(255, 255, 255)
 	pcall(function() replacement.Material = anchor.Material end)
 	pcall(function() replacement.CastShadow = false end)
-	replacement:SetAttribute("__LionCustomSniperReplacement", true)
+	replacement:SetAttribute("__SpectreCustomSniperReplacement", true)
 	replacement:SetAttribute("WrapGroup", 1)
 	replacement:SetAttribute("IgnoreTransparency", true)
 	pcall(function() replacement:AddTag("Wrappable") end)
@@ -10129,7 +10129,7 @@ function __LionCreateSniperReplacementMeshPart(root, anchor, replacementName, me
 
 	if not replacement.Anchored then
 		local weld = Instance.new("WeldConstraint")
-		weld.Name = "__LionCustomSniperReplacementWeld"
+		weld.Name = "__SpectreCustomSniperReplacementWeld"
 		weld.Part0 = anchor
 		weld.Part1 = replacement
 		weld.Parent = replacement
@@ -10141,15 +10141,15 @@ local function setupSniperReplacementPart(root, profile, bodyParts)
 	local anchor = bodyParts[1]
 	if not anchor then return false end
 	for _, descendant in ipairs(root:GetDescendants()) do
-		if descendant:GetAttribute("__LionCustomSniperReplacement") then
+		if descendant:GetAttribute("__SpectreCustomSniperReplacement") then
 			descendant:Destroy()
 		end
 	end
 
-	return __LionCreateSniperReplacementMeshPart(
+	return __SpectreCreateSniperReplacementMeshPart(
 		root,
 		anchor,
-		"__LionCustomSniperReplacement",
+		"__SpectreCustomSniperReplacement",
 		profile.ReplacementMeshId,
 		profile.ReplacementTextureId,
 		getAverageCFrame(bodyParts) * CFrame.new(profile.ReplacementOffset or Vector3.zero),
@@ -10197,9 +10197,9 @@ local function getSniperMeshSignature(profile)
 	}, "|")
 end
 
-function __LionApplySniperMultiMeshProfile(root, profile)
+function __SpectreApplySniperMultiMeshProfile(root, profile)
 	for _, descendant in ipairs(root:GetDescendants()) do
-		if descendant:GetAttribute("__LionCustomSniperReplacement") then
+		if descendant:GetAttribute("__SpectreCustomSniperReplacement") then
 			descendant:Destroy()
 		end
 	end
@@ -10208,7 +10208,7 @@ function __LionApplySniperMultiMeshProfile(root, profile)
 	local function collectIfTarget(obj)
 		local part = getMeshLikePart(obj)
 		if not part or seenParts[part] then return end
-		local previousType = part:GetAttribute("__LionSniperAnchorType")
+		local previousType = part:GetAttribute("__SpectreSniperAnchorType")
 		if previousType == "Body" or meshMatchesAnyAssetId(obj, profile.BodyMeshIds) then
 			seenParts[part] = true
 			table.insert(bodyParts, part)
@@ -10238,27 +10238,27 @@ function __LionApplySniperMultiMeshProfile(root, profile)
 	local scopeCFrame = bodyCFrame * CFrame.new(profile.ScopeOffset or Vector3.zero)
 	local magazineCFrame = bodyCFrame * CFrame.new(profile.MagazineOffset or Vector3.zero)
 	local applied = 0
-	if __LionCreateSniperReplacementMeshPart(root, bodyAnchor, "__LionCustomSniperReplacement", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, bodyCFrame, profile) then
+	if __SpectreCreateSniperReplacementMeshPart(root, bodyAnchor, "__SpectreCustomSniperReplacement", profile.BodyReplacementMeshId, profile.BodyReplacementTextureId, bodyCFrame, profile) then
 		applied += 1
 	end
-	if __LionCreateSniperReplacementMeshPart(root, bodyAnchor, "__LionCustomSniperScope", profile.ScopeReplacementMeshId, profile.ScopeReplacementTextureId, scopeCFrame, profile) then
+	if __SpectreCreateSniperReplacementMeshPart(root, bodyAnchor, "__SpectreCustomSniperScope", profile.ScopeReplacementMeshId, profile.ScopeReplacementTextureId, scopeCFrame, profile) then
 		applied += 1
 	end
-	if __LionCreateSniperReplacementMeshPart(root, magazineAnchor, "__LionCustomSniperMagazine", profile.MagazineReplacementMeshId, profile.MagazineReplacementTextureId, magazineCFrame, profile) then
+	if __SpectreCreateSniperReplacementMeshPart(root, magazineAnchor, "__SpectreCustomSniperMagazine", profile.MagazineReplacementMeshId, profile.MagazineReplacementTextureId, magazineCFrame, profile) then
 		applied += 1
 	end
 
 	for _, part in ipairs(bodyParts) do
-		__LionHideSniperMeshAnchor(part, "Body")
+		__SpectreHideSniperMeshAnchor(part, "Body")
 	end
 	for _, part in ipairs(magazineParts) do
-		__LionHideSniperMeshAnchor(part, "Magazine")
+		__SpectreHideSniperMeshAnchor(part, "Magazine")
 	end
 	for _, part in ipairs(bulletParts) do
-		__LionOffsetSniperVisibleAnchor(part, "Bullet", profile.BulletOffset or Vector3.zero)
+		__SpectreOffsetSniperVisibleAnchor(part, "Bullet", profile.BulletOffset or Vector3.zero)
 	end
 	for _, part in ipairs(removeParts) do
-		__LionHideSniperMeshAnchor(part, "Remove")
+		__SpectreHideSniperMeshAnchor(part, "Remove")
 	end
 	return applied > 0
 end
@@ -10266,17 +10266,17 @@ end
 local function applySniperMeshProfile(root, profile)
 	if typeof(root) ~= "Instance" or not profile then return false end
 	local signature = getSniperMeshSignature(profile)
-	if root:GetAttribute("__LionSniperMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionSniperMeshSignature") == signature then
+	if root:GetAttribute("__SpectreSniperMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreSniperMeshSignature") == signature then
 		return true
 	end
 
 	local applied
 	if profile.BodyReplacementMeshId or profile.ScopeReplacementMeshId or profile.MagazineReplacementMeshId then
-		applied = __LionApplySniperMultiMeshProfile(root, profile)
+		applied = __SpectreApplySniperMultiMeshProfile(root, profile)
 		if not applied then return false end
-		root:SetAttribute("__LionSniperMeshSkin", profile.Skin)
-		root:SetAttribute("__LionSniperMeshSignature", signature)
+		root:SetAttribute("__SpectreSniperMeshSkin", profile.Skin)
+		root:SetAttribute("__SpectreSniperMeshSignature", signature)
 		return true
 	end
 
@@ -10293,8 +10293,8 @@ local function applySniperMeshProfile(root, profile)
 	if not setupSniperReplacementPart(root, profile, bodyParts) then
 		return false
 	end
-	root:SetAttribute("__LionSniperMeshSkin", profile.Skin)
-	root:SetAttribute("__LionSniperMeshSignature", signature)
+	root:SetAttribute("__SpectreSniperMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreSniperMeshSignature", signature)
 	return true
 end
 
@@ -10326,12 +10326,12 @@ end
 local function addTripmineExtraMeshPart(basePart, meshId, meshScale, profile, index)
 	if not (basePart and basePart:IsA("BasePart") and basePart.Parent) then return nil end
 	local overlay = Instance.new("Part")
-	overlay.Name = "__LionCustomTripmineMeshExtra" .. tostring(index or "")
+	overlay.Name = "__SpectreCustomTripmineMeshExtra" .. tostring(index or "")
 	overlay.Anchored = basePart.Anchored
 	overlay.CFrame = basePart.CFrame
 	overlay.Size = basePart.Size
-	overlay:SetAttribute("__LionCustomTripmineMeshPart", true)
-	overlay:SetAttribute("__LionCustomTripmineExtraMesh", true)
+	overlay:SetAttribute("__SpectreCustomTripmineMeshPart", true)
+	overlay:SetAttribute("__SpectreCustomTripmineExtraMesh", true)
 	applyTripminePartVisual(overlay, profile)
 
 	local mesh = Instance.new("SpecialMesh")
@@ -10348,7 +10348,7 @@ local function addTripmineExtraMeshPart(basePart, meshId, meshScale, profile, in
 	overlay.Parent = basePart.Parent
 
 	local weld = Instance.new("WeldConstraint")
-	weld.Name = "__LionCustomTripmineMeshExtraWeld"
+	weld.Name = "__SpectreCustomTripmineMeshExtraWeld"
 	weld.Part0 = basePart
 	weld.Part1 = overlay
 	weld.Parent = overlay
@@ -10363,9 +10363,9 @@ local function applyTripmineMeshProfile(root, profile, worldVisual)
 	local extraMeshScale = getTripmineExtraMeshScale(profile, worldVisual)
 	local meshSignature = getTripmineMeshSignature(profile, worldVisual)
 	local meshScale = (worldVisual and profile.WorldScale) or profile.Scale or 1
-	if root:GetAttribute("__LionTripmineMeshSkin") == profile.Skin
-		and root:GetAttribute("__LionCustomTripmineMeshIds") == meshSignature
-		and root:GetAttribute("__LionCustomTripmineMeshScale") == meshScale then
+	if root:GetAttribute("__SpectreTripmineMeshSkin") == profile.Skin
+		and root:GetAttribute("__SpectreCustomTripmineMeshIds") == meshSignature
+		and root:GetAttribute("__SpectreCustomTripmineMeshScale") == meshScale then
 		return true
 	end
 	removeCustomTripmineExtraMeshes(root)
@@ -10413,10 +10413,10 @@ local function applyTripmineMeshProfile(root, profile, worldVisual)
 				target.Transparency = 1
 				target.LocalTransparencyModifier = 1
 			end)
-			local overlay = target.Parent:FindFirstChild("__LionCustomTripmineMesh")
+			local overlay = target.Parent:FindFirstChild("__SpectreCustomTripmineMesh")
 			if not (overlay and overlay:IsA("BasePart")) then
 				overlay = Instance.new("Part")
-				overlay.Name = "__LionCustomTripmineMesh"
+				overlay.Name = "__SpectreCustomTripmineMesh"
 				overlay.Anchored = target.Anchored
 				overlay.CanCollide = false
 				overlay.CanTouch = false
@@ -10438,14 +10438,14 @@ local function applyTripmineMeshProfile(root, profile, worldVisual)
 			mesh.Scale = Vector3.new(meshScale, meshScale, meshScale)
 			pcall(function() mesh.VertexColor = Vector3.new(1, 1, 1) end)
 			mesh.Parent = overlay
-			overlay:SetAttribute("__LionCustomTripmineMeshPart", true)
+			overlay:SetAttribute("__SpectreCustomTripmineMeshPart", true)
 			customPart = overlay
 			for index = 2, #meshIds do
 				addTripmineExtraMeshPart(overlay, meshIds[index], scaleTripmineMeshVector(meshScale, extraMeshScale), profile, index)
 			end
-			if not overlay:FindFirstChild("__LionCustomTripmineMeshWeld") then
+			if not overlay:FindFirstChild("__SpectreCustomTripmineMeshWeld") then
 				local weld = Instance.new("WeldConstraint")
-				weld.Name = "__LionCustomTripmineMeshWeld"
+				weld.Name = "__SpectreCustomTripmineMeshWeld"
 				weld.Part0 = target
 				weld.Part1 = overlay
 				weld.Parent = overlay
@@ -10454,12 +10454,12 @@ local function applyTripmineMeshProfile(root, profile, worldVisual)
 	end
 
 	if customPart and customPart:IsA("BasePart") then
-		customPart:SetAttribute("__LionCustomTripmineMeshPart", true)
+		customPart:SetAttribute("__SpectreCustomTripmineMeshPart", true)
 	end
-	root:SetAttribute("__LionTripmineMeshSkin", profile.Skin)
-	root:SetAttribute("__LionCustomTripmineMeshId", meshIds[1])
-	root:SetAttribute("__LionCustomTripmineMeshIds", meshSignature)
-	root:SetAttribute("__LionCustomTripmineMeshScale", meshScale)
+	root:SetAttribute("__SpectreTripmineMeshSkin", profile.Skin)
+	root:SetAttribute("__SpectreCustomTripmineMeshId", meshIds[1])
+	root:SetAttribute("__SpectreCustomTripmineMeshIds", meshSignature)
+	root:SetAttribute("__SpectreCustomTripmineMeshScale", meshScale)
 	return true
 end
 
@@ -10503,64 +10503,64 @@ local function shouldRebuildVirtualViewModelAsset(cosmeticName, asset, worldAsse
 	if profile then
 		local meshIds = getTripmineMeshIds(profile)
 		return not asset
-			or asset:GetAttribute("__LionTripmineMeshSkin") ~= profile.Skin
-			or asset:GetAttribute("__LionCustomTripmineMeshIds") ~= getTripmineMeshSignature(profile)
-			or asset:GetAttribute("__LionCustomTripmineMeshScale") ~= (profile.Scale or 1)
-			or asset:GetAttribute("__LionCustomTripmineMeshId") ~= meshIds[1]
+			or asset:GetAttribute("__SpectreTripmineMeshSkin") ~= profile.Skin
+			or asset:GetAttribute("__SpectreCustomTripmineMeshIds") ~= getTripmineMeshSignature(profile)
+			or asset:GetAttribute("__SpectreCustomTripmineMeshScale") ~= (profile.Scale or 1)
+			or asset:GetAttribute("__SpectreCustomTripmineMeshId") ~= meshIds[1]
 	end
 	local sniperProfile = SNIPER_MESH_SKIN_OVERRIDES[cosmeticName]
 	if sniperProfile then
 		return not asset
-			or asset:GetAttribute("__LionSniperMeshSkin") ~= sniperProfile.Skin
-			or asset:GetAttribute("__LionSniperMeshSignature") ~= getSniperMeshSignature(sniperProfile)
-			or not asset:FindFirstChild("__LionCustomSniperReplacement", true)
+			or asset:GetAttribute("__SpectreSniperMeshSkin") ~= sniperProfile.Skin
+			or asset:GetAttribute("__SpectreSniperMeshSignature") ~= getSniperMeshSignature(sniperProfile)
+			or not asset:FindFirstChild("__SpectreCustomSniperReplacement", true)
 	end
 	local daggerProfile = DAGGERS_MESH_SKIN_OVERRIDES[cosmeticName]
 	if daggerProfile then
 		return not asset
-			or asset:GetAttribute("__LionDaggerMeshSkin") ~= daggerProfile.Skin
-			or asset:GetAttribute("__LionDaggerMeshSignature") ~= getDaggerMeshSignature(daggerProfile)
-			or (asset:GetAttribute("__LionDaggerMeshCount") or 0) <= 0
+			or asset:GetAttribute("__SpectreDaggerMeshSkin") ~= daggerProfile.Skin
+			or asset:GetAttribute("__SpectreDaggerMeshSignature") ~= getDaggerMeshSignature(daggerProfile)
+			or (asset:GetAttribute("__SpectreDaggerMeshCount") or 0) <= 0
 	end
 	local satchelProfile = getSatchelMeshProfileForAsset(cosmeticName, worldAsset)
 	if satchelProfile then
 		return not asset
-			or asset:GetAttribute("__LionSatchelMeshSkin") ~= satchelProfile.Skin
-			or asset:GetAttribute("__LionSatchelMeshSignature") ~= getSatchelMeshSignature(satchelProfile)
-			or (asset:GetAttribute("__LionSatchelMeshCount") or 0) <= 0
+			or asset:GetAttribute("__SpectreSatchelMeshSkin") ~= satchelProfile.Skin
+			or asset:GetAttribute("__SpectreSatchelMeshSignature") ~= getSatchelMeshSignature(satchelProfile)
+			or (asset:GetAttribute("__SpectreSatchelMeshCount") or 0) <= 0
 	end
 	local rpgProfile = RPG_MESH_SKIN_OVERRIDES[cosmeticName]
 	if rpgProfile then
 		return not asset
-			or asset:GetAttribute("__LionRpgMeshSkin") ~= rpgProfile.Skin
-			or asset:GetAttribute("__LionRpgMeshSignature") ~= getRpgMeshSignature(rpgProfile)
-			or asset:GetAttribute("__LionRpgRocketVisible") ~= false
-			or ((asset:GetAttribute("__LionRpgMeshCount") or 0) + (asset:GetAttribute("__LionRpgHiddenCount") or 0)) <= 0
+			or asset:GetAttribute("__SpectreRpgMeshSkin") ~= rpgProfile.Skin
+			or asset:GetAttribute("__SpectreRpgMeshSignature") ~= getRpgMeshSignature(rpgProfile)
+			or asset:GetAttribute("__SpectreRpgRocketVisible") ~= false
+			or ((asset:GetAttribute("__SpectreRpgMeshCount") or 0) + (asset:GetAttribute("__SpectreRpgHiddenCount") or 0)) <= 0
 	end
 	local fistsProfile = FISTS_MESH_SKIN_OVERRIDES[cosmeticName]
 	if fistsProfile then
 		return not asset
-			or asset:GetAttribute("__LionFistsMeshSkin") ~= fistsProfile.Skin
-			or asset:GetAttribute("__LionFistsMeshSignature") ~= getFistsMeshSignature(fistsProfile)
-			or (asset:GetAttribute("__LionFistsMeshCount") or 0) <= 0
+			or asset:GetAttribute("__SpectreFistsMeshSkin") ~= fistsProfile.Skin
+			or asset:GetAttribute("__SpectreFistsMeshSignature") ~= getFistsMeshSignature(fistsProfile)
+			or (asset:GetAttribute("__SpectreFistsMeshCount") or 0) <= 0
 	end
 	local bowProfile = BOW_MESH_SKIN_OVERRIDES[cosmeticName]
 	if bowProfile then
 		return not asset
-			or asset:GetAttribute("__LionBowMeshSkin") ~= bowProfile.Skin
-			or asset:GetAttribute("__LionBowMeshSignature") ~= getBowMeshSignature(bowProfile)
-			or (asset:GetAttribute("__LionBowMeshCount") or 0) <= 0
+			or asset:GetAttribute("__SpectreBowMeshSkin") ~= bowProfile.Skin
+			or asset:GetAttribute("__SpectreBowMeshSignature") ~= getBowMeshSignature(bowProfile)
+			or (asset:GetAttribute("__SpectreBowMeshCount") or 0) <= 0
 	end
 	local assaultRifleProfile = ASSAULT_RIFLE_MESH_SKIN_OVERRIDES[cosmeticName]
 	if assaultRifleProfile then
 		return not asset
-			or asset:GetAttribute("__LionAssaultRifleMeshSkin") ~= assaultRifleProfile.Skin
-			or asset:GetAttribute("__LionAssaultRifleMeshSignature") ~= getAssaultRifleMeshSignature(assaultRifleProfile)
-			or (asset:GetAttribute("__LionAssaultRifleMeshCount") or 0) <= 0
+			or asset:GetAttribute("__SpectreAssaultRifleMeshSkin") ~= assaultRifleProfile.Skin
+			or asset:GetAttribute("__SpectreAssaultRifleMeshSignature") ~= getAssaultRifleMeshSignature(assaultRifleProfile)
+			or (asset:GetAttribute("__SpectreAssaultRifleMeshCount") or 0) <= 0
 	end
 	return cosmeticName == DICE_TRIPMINE_SKIN
 		and asset
-		and asset:GetAttribute("__LionRightArmRetargeted")
+		and asset:GetAttribute("__SpectreRightArmRetargeted")
 end
 
 local function ensureVirtualViewModel(cosmeticName, itemName, viewModelName)
@@ -11081,7 +11081,7 @@ if vmmod then
 		local function collectCustomTripmineWrapTargets(model)
 			local targets = {}
 			for _, descendant in ipairs(model:GetDescendants()) do
-				if descendant:IsA("BasePart") and descendant:GetAttribute("__LionCustomTripmineMeshPart") then
+				if descendant:IsA("BasePart") and descendant:GetAttribute("__SpectreCustomTripmineMeshPart") then
 					if descendant:GetAttribute("WrapGroup") == nil then
 						descendant:SetAttribute("WrapGroup", 1)
 					end
@@ -11102,13 +11102,13 @@ if vmmod then
 						pcall(wrapController.ResetWrap, wrapController, self._original_wrap_properties)
 						self._original_wrap_properties = nil
 					end
-					if self.__LionCustomTripmineWrapProperties then
-						pcall(wrapController.ResetWrap, wrapController, self.__LionCustomTripmineWrapProperties)
-						self.__LionCustomTripmineWrapProperties = nil
+					if self.__SpectreCustomTripmineWrapProperties then
+						pcall(wrapController.ResetWrap, wrapController, self.__SpectreCustomTripmineWrapProperties)
+						self.__SpectreCustomTripmineWrapProperties = nil
 					end
 					if wrap then
-						self.__LionCustomTripmineWrapProperties = wrapController:RecordOriginalWrapProperties(targets)
-						wrapController:ApplyWrap(self.__LionCustomTripmineWrapProperties, wrap, true)
+						self.__SpectreCustomTripmineWrapProperties = wrapController:RecordOriginalWrapProperties(targets)
+						wrapController:ApplyWrap(self.__SpectreCustomTripmineWrapProperties, wrap, true)
 					end
 					if self._UpdateLocalTransparencyModifiers then
 						pcall(self._UpdateLocalTransparencyModifiers, self)
@@ -11253,7 +11253,7 @@ local function tryApplyRpgProjectileSkin(inst)
 	local profile = RPG_MESH_SKIN_OVERRIDES[RPG_CUSTOM_SKIN]
 	if not (profile and isRpgRazeEquipped() and typeof(inst) == "Instance") then return end
 	if isInsideWorkspaceViewModels(inst) then return end
-	if inst:GetAttribute("__LionRpgProjectileSkinChecked") then return end
+	if inst:GetAttribute("__SpectreRpgProjectileSkinChecked") then return end
 
 	local shouldApply = false
 	if inst:IsA("MeshPart") or inst:IsA("SpecialMesh") then
@@ -11263,7 +11263,7 @@ local function tryApplyRpgProjectileSkin(inst)
 	end
 	if not shouldApply then return end
 
-	inst:SetAttribute("__LionRpgProjectileSkinChecked", true)
+	inst:SetAttribute("__SpectreRpgProjectileSkinChecked", true)
 	applyRpgMeshProfile(inst, profile, {
 		ShowRocket = true,
 		ForceRocket = true
@@ -11272,8 +11272,8 @@ end
 
 local function installRpgProjectileSkinHook()
 	local env = getgenv and getgenv() or _G
-	local state = env.__LionRpgProjectileSkinHookState or {}
-	env.__LionRpgProjectileSkinHookState = state
+	local state = env.__SpectreRpgProjectileSkinHookState or {}
+	env.__SpectreRpgProjectileSkinHookState = state
 	local version = 2
 	if state.Version == version and state.Connection then return end
 	if state.Connection then
@@ -11292,11 +11292,11 @@ end
 
 local function disableRpgProjectileSkinHook()
 	local env = getgenv and getgenv() or _G
-	local state = env.__LionRpgProjectileSkinHookState
+	local state = env.__SpectreRpgProjectileSkinHookState
 	if state and state.Connection then
 		pcall(function() state.Connection:Disconnect() end)
 	end
-	env.__LionRpgProjectileSkinHookState = {
+	env.__SpectreRpgProjectileSkinHookState = {
 		Version = 3,
 		Connection = nil
 	}
@@ -11305,7 +11305,7 @@ end
 local function ensurePlacedTripmineWrapTargets(visual)
 	if typeof(visual) ~= "Instance" then return end
 	for _, descendant in ipairs(visual:GetDescendants()) do
-		if descendant:IsA("BasePart") and descendant:GetAttribute("__LionCustomTripmineMeshPart") then
+		if descendant:IsA("BasePart") and descendant:GetAttribute("__SpectreCustomTripmineMeshPart") then
 			if descendant:GetAttribute("WrapGroup") == nil then
 				descendant:SetAttribute("WrapGroup", 1)
 			end
@@ -11342,7 +11342,7 @@ end
 local function isInsidePlacedSkinVisual(inst)
 	local current = inst
 	while current do
-		if current.Name == "__LionPlacedSkin" or current:GetAttribute("__LionPlacedSkin") then
+		if current.Name == "__SpectrePlacedSkin" or current:GetAttribute("__SpectrePlacedSkin") then
 			return true
 		end
 		current = current.Parent
@@ -11369,8 +11369,8 @@ local function hideOriginalTripmineVisual(object)
 		hide(descendant)
 	end
 
-	if not object:GetAttribute("__LionHideOriginalTripmineHook") then
-		object:SetAttribute("__LionHideOriginalTripmineHook", true)
+	if not object:GetAttribute("__SpectreHideOriginalTripmineHook") then
+		object:SetAttribute("__SpectreHideOriginalTripmineHook", true)
 		local connection
 		connection = object.DescendantAdded:Connect(function(descendant)
 			task.defer(hide, descendant)
@@ -11382,8 +11382,8 @@ local function hideOriginalTripmineVisual(object)
 		end)
 	end
 
-	if not object:GetAttribute("__LionHideOriginalTripmineLoop") then
-		object:SetAttribute("__LionHideOriginalTripmineLoop", true)
+	if not object:GetAttribute("__SpectreHideOriginalTripmineLoop") then
+		object:SetAttribute("__SpectreHideOriginalTripmineLoop", true)
 		task.spawn(function()
 			for _ = 1, 80 do
 				if not object.Parent then break end
@@ -11393,7 +11393,7 @@ local function hideOriginalTripmineVisual(object)
 				task.wait(0.1)
 			end
 			if object.Parent then
-				object:SetAttribute("__LionHideOriginalTripmineLoop", nil)
+				object:SetAttribute("__SpectreHideOriginalTripmineLoop", nil)
 			end
 		end)
 	end
@@ -11404,7 +11404,7 @@ local function prunePlacedTripmineVisualToCustomMesh(visual)
 	local primaryPart
 	for _, descendant in ipairs(visual:GetDescendants()) do
 		if descendant:IsA("BasePart") then
-			if descendant:GetAttribute("__LionCustomTripmineMeshPart") then
+			if descendant:GetAttribute("__SpectreCustomTripmineMeshPart") then
 				primaryPart = primaryPart or descendant
 			else
 				descendant:Destroy()
@@ -11419,7 +11419,7 @@ end
 local function isInsideCustomTripmineMeshPart(inst)
 	local current = inst
 	while current do
-		if current:IsA("BasePart") and current:GetAttribute("__LionCustomTripmineMeshPart") then
+		if current:IsA("BasePart") and current:GetAttribute("__SpectreCustomTripmineMeshPart") then
 			return true
 		end
 		current = current.Parent
@@ -11431,7 +11431,7 @@ local function forcePlacedSkinVisualVisible(visual)
 	if typeof(visual) ~= "Instance" then return end
 
 	local function show(inst)
-		if inst:IsA("BasePart") and inst:GetAttribute("__LionCustomTripmineMeshPart") then
+		if inst:IsA("BasePart") and inst:GetAttribute("__SpectreCustomTripmineMeshPart") then
 			inst.Transparency = 0
 			inst.LocalTransparencyModifier = 0
 		elseif (inst:IsA("Decal") or inst:IsA("Texture")) and isInsideCustomTripmineMeshPart(inst) then
@@ -11443,8 +11443,8 @@ local function forcePlacedSkinVisualVisible(visual)
 		show(descendant)
 	end
 
-	if not visual:GetAttribute("__LionShowPlacedSkinLoop") then
-		visual:SetAttribute("__LionShowPlacedSkinLoop", true)
+	if not visual:GetAttribute("__SpectreShowPlacedSkinLoop") then
+		visual:SetAttribute("__SpectreShowPlacedSkinLoop", true)
 		local connection
 		connection = visual.DescendantAdded:Connect(function(descendant)
 			task.defer(show, descendant)
@@ -11461,7 +11461,7 @@ local function forcePlacedSkinVisualVisible(visual)
 				connection:Disconnect()
 			end
 			if visual.Parent then
-				visual:SetAttribute("__LionShowPlacedSkinLoop", nil)
+				visual:SetAttribute("__SpectreShowPlacedSkinLoop", nil)
 			end
 		end)
 	end
@@ -11483,8 +11483,8 @@ local function installPlacedCosmeticHooks()
 
 	pcall(function()
 		local jumpPads = require(components:WaitForChild("JumpPads", 10))
-		if jumpPads.__LionSkinHook then return end
-		jumpPads.__LionSkinHook = true
+		if jumpPads.__SpectreSkinHook then return end
+		jumpPads.__SpectreSkinHook = true
 		local oldObjectAdded = jumpPads._ObjectAdded
 		jumpPads._ObjectAdded = function(self, object)
 			local skinName = getWorldSkinName("Jump Pad")
@@ -11497,8 +11497,8 @@ local function installPlacedCosmeticHooks()
 
 	pcall(function()
 		local tripmines = require(components:WaitForChild("SubspaceTripmines", 10))
-		if tripmines.__LionSkinHook then return end
-		tripmines.__LionSkinHook = true
+		if tripmines.__SpectreSkinHook then return end
+		tripmines.__SpectreSkinHook = true
 		local oldObjectAdded = tripmines._ObjectAdded
 		tripmines._ObjectAdded = function(self, object)
 			local skinName = getWorldSkinName("Subspace Tripmine")
@@ -11506,7 +11506,7 @@ local function installPlacedCosmeticHooks()
 			local meshProfile = TRIPMINE_MESH_SKIN_OVERRIDES[placedSkinName]
 			if meshProfile and isLocalPlacedObject(object, "Subspace Tripmine") then
 				task.defer(function()
-					if not object.Parent or object:FindFirstChild("__LionPlacedSkin") then return end
+					if not object.Parent or object:FindFirstChild("__SpectrePlacedSkin") then return end
 					hideOriginalTripmineVisual(object)
 
 					local throwables = lps.Assets:FindFirstChild("Throwables")
@@ -11535,8 +11535,8 @@ local function installPlacedCosmeticHooks()
 							descendant:Destroy()
 						end
 					end
-					visual.Name = "__LionPlacedSkin"
-					visual:SetAttribute("__LionPlacedSkin", true)
+					visual.Name = "__SpectrePlacedSkin"
+					visual:SetAttribute("__SpectrePlacedSkin", true)
 					visual.Parent = object
 					hideOriginalTripmineVisual(object)
 					pivotPlacedTripmineVisual(visual, hitbox, meshProfile)
@@ -11627,8 +11627,8 @@ local function installPlacedCosmeticHooks()
 		local smokeModule = lps.Modules:FindFirstChild("SmokeCloud")
 		if not smokeModule then return end
 		local smokeCloud = require(smokeModule)
-		if smokeCloud.__LionSkinHook or type(smokeCloud.new) ~= "function" then return end
-		smokeCloud.__LionSkinHook = true
+		if smokeCloud.__SpectreSkinHook or type(smokeCloud.new) ~= "function" then return end
+		smokeCloud.__SpectreSkinHook = true
 
 		local oldNew = smokeCloud.new
 		smokeCloud.new = function(...)
@@ -11667,7 +11667,7 @@ local function installPlacedCosmeticHooks()
 					end
 				end
 				if not ownerObject or typeof(model) ~= "Instance" or not model.Parent then return end
-				if model:FindFirstChild("__LionSmokeSkin") then return end
+				if model:FindFirstChild("__SpectreSmokeSkin") then return end
 
 				for _, descendant in pairs(model:GetDescendants()) do
 					if descendant:IsA("BasePart") then
@@ -11680,11 +11680,11 @@ local function installPlacedCosmeticHooks()
 				if not source then return end
 
 				local visual = source:Clone()
-				visual.Name = "__LionSmokeSkin"
+				visual.Name = "__SpectreSmokeSkin"
 				local anchor = model:IsA("BasePart") and model or model:FindFirstChildWhichIsA("BasePart", true)
 				if not anchor then
 					anchor = Instance.new("Part")
-					anchor.Name = "__LionSmokeAnchor"
+					anchor.Name = "__SpectreSmokeAnchor"
 					anchor.Size = Vector3.new(0.1, 0.1, 0.1)
 					anchor.Transparency = 1
 					anchor.Anchored = true
@@ -12055,7 +12055,7 @@ local function makeCosmeticChanger()
 	rebuildCosmeticLists()
 
 	local gui = Instance.new("Frame")
-	gui.Name = "LionCosmeticChanger"
+	gui.Name = "SpectreCosmeticChanger"
 	gui.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 	gui.BorderColor3 = Color3.fromRGB(45, 45, 45)
 	gui.BorderSizePixel = 1
@@ -12533,8 +12533,8 @@ local function makeCosmeticChanger()
 	end)
 	close.MouseButton1Click:Connect(function()
 		cosmeticGuiState.Wanted = false
-		if shared.LionCosmeticChangerToggle and shared.LionCosmeticChangerToggle.Toggle then
-			shared.LionCosmeticChangerToggle:Toggle(false)
+		if shared.SpectreCosmeticChangerToggle and shared.SpectreCosmeticChangerToggle.Toggle then
+			shared.SpectreCosmeticChangerToggle:Toggle(false)
 		else
 			gui.Visible = false
 		end
@@ -12547,8 +12547,8 @@ local function makeCosmeticChanger()
 		nextCosmeticGuiUpdate = now + 0.1
 		local menuOpen = mainapi.ClickGuiStatus == true
 		pcall(function()
-			if LionWindow and LionWindow.Holder then
-				menuOpen = LionWindow.Holder.Visible == true
+			if SpectreWindow and SpectreWindow.Holder then
+				menuOpen = SpectreWindow.Holder.Visible == true
 			end
 		end)
 		gui.Visible = cosmeticGuiState.Wanted and menuOpen
@@ -12558,7 +12558,7 @@ local function makeCosmeticChanger()
 	return gui
 end
 
-shared.LionCosmeticChanger = {
+shared.SpectreCosmeticChanger = {
 	SetVisible = function(visible)
 		cosmeticGuiState.Wanted = visible == true
 		makeCosmeticChanger()
@@ -12975,7 +12975,7 @@ run(function()
     local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
     local UserInputService = cloneref(game:GetService("UserInputService"))
 
-    local weaponState = getgenv().__LionWeaponOptionsState
+    local weaponState = getgenv().__SpectreWeaponOptionsState
     if weaponState and weaponState.Restore then
         pcall(weaponState.Restore)
     end
@@ -13000,7 +13000,7 @@ run(function()
         FullAutoItems = setmetatable({}, {__mode = "k"}),
         Connections = {},
     }
-    getgenv().__LionWeaponOptionsState = weaponState
+    getgenv().__SpectreWeaponOptionsState = weaponState
 
     local function stopBackstabCameraLoop(loopId)
         if _G.CurrentCameraLoopID == loopId then
@@ -13637,7 +13637,7 @@ run(function()
 end)
 
 run(function()
-    local VisualState = getgenv().__LionVisualsExtendedState or {
+    local VisualState = getgenv().__SpectreVisualsExtendedState or {
         Hooked = false,
         ShootHooked = false,
         TracerHooked = false,
@@ -13677,7 +13677,7 @@ run(function()
         VisualState.AimingHooked = false
         VisualState.Version = 9
     end
-    getgenv().__LionVisualsExtendedState = VisualState
+    getgenv().__SpectreVisualsExtendedState = VisualState
 
     local Players = cloneref(game:GetService("Players"))
     local RunService = cloneref(game:GetService("RunService"))
@@ -13935,7 +13935,7 @@ run(function()
         if not wire then return end
         local buildKey
         pcall(function()
-            buildKey = wire:GetAttribute("LionWireBuildKey")
+            buildKey = wire:GetAttribute("SpectreWireBuildKey")
         end)
         if not buildKey then
             pcall(function() wire:Destroy() end)
@@ -13964,8 +13964,8 @@ run(function()
         local buildKey = "box|" .. tostring(part.Size)
         local wire = VisualState.PrimitiveWireframes[part]
         if not enabled and not wire then return end
-        local oldWire = part:FindFirstChild("__LionVMWireframe")
-        local oldBox = part:FindFirstChild("__LionVMWireframeBox")
+        local oldWire = part:FindFirstChild("__SpectreVMWireframe")
+        local oldBox = part:FindFirstChild("__SpectreVMWireframeBox")
         if (oldWire or oldBox) and not wire then
             if oldWire then oldWire:Destroy() end
             if oldBox then oldBox:Destroy() end
@@ -13976,7 +13976,7 @@ run(function()
                 wire = nil
             end
             if not wire then
-                wire = acquireWireframe("__LionVMWireframe", buildKey, part)
+                wire = acquireWireframe("__SpectreVMWireframe", buildKey, part)
                 if wire then
                     VisualState.PrimitiveWireframes[part] = wire
                 else
@@ -13988,7 +13988,7 @@ run(function()
                 if wire.Color3 ~= c then
                     pcall(function() wire.Color3 = c end)
                 end
-                if wire:GetAttribute("LionWireBuildKey") ~= buildKey then
+                if wire:GetAttribute("SpectreWireBuildKey") ~= buildKey then
                     pcall(function() wire:Clear() end)
                     local half = part.Size * 0.5
                     local corners = {
@@ -14004,7 +14004,7 @@ run(function()
                         end)
                     end
                     pcall(function()
-                        wire:SetAttribute("LionWireBuildKey", buildKey)
+                        wire:SetAttribute("SpectreWireBuildKey", buildKey)
                     end)
                 end
             end
@@ -14127,7 +14127,7 @@ run(function()
         VisualState.MeshWireframes = VisualState.MeshWireframes or setmetatable({}, {__mode = "k"})
         local wire = VisualState.MeshWireframes[adornee]
         if not enabled and not wire then return end
-        local old = adornee:FindFirstChild("__LionVMMeshWireframe")
+        local old = adornee:FindFirstChild("__SpectreVMMeshWireframe")
         if old and not wire then old:Destroy() end
         if not enabled then
             releaseWireframe(wire)
@@ -14150,7 +14150,7 @@ run(function()
         end
 
         if not wire then
-            wire = acquireWireframe("__LionVMMeshWireframe", buildKey, adornee)
+            wire = acquireWireframe("__SpectreVMMeshWireframe", buildKey, adornee)
             if not wire then return end
             VisualState.MeshWireframes[adornee] = wire
         end
@@ -14159,7 +14159,7 @@ run(function()
         if wire.Color3 ~= c then
             pcall(function() wire.Color3 = c end)
         end
-        if wire:GetAttribute("LionWireBuildKey") ~= buildKey then
+        if wire:GetAttribute("SpectreWireBuildKey") ~= buildKey then
             pcall(function() wire:Clear() end)
             for _, line in ipairs(data.Lines) do
                 pcall(function()
@@ -14167,7 +14167,7 @@ run(function()
                 end)
             end
             pcall(function()
-                wire:SetAttribute("LionWireBuildKey", buildKey)
+                wire:SetAttribute("SpectreWireBuildKey", buildKey)
             end)
         end
     end
@@ -14345,9 +14345,9 @@ run(function()
             id = "rbxassetid://" .. id:gsub("%D", "")
         end
         local sound = Instance.new("Sound")
-        sound.Name = "__LionCustomSound"
+        sound.Name = "__SpectreCustomSound"
         pcall(function()
-            sound:SetAttribute("__LionCustomSound", true)
+            sound:SetAttribute("__SpectreCustomSound", true)
         end)
         sound.SoundId = id
         sound.Volume = math.clamp(tonumber(volume) or 0.5, 0, 10)
@@ -14385,7 +14385,7 @@ run(function()
     local function suppressDefaultShootSounds(snapshot)
         for _, root in ipairs(getShootSoundRoots()) do
             for _, obj in ipairs(root:GetDescendants()) do
-                if obj:IsA("Sound") and not obj:GetAttribute("__LionCustomSound") then
+                if obj:IsA("Sound") and not obj:GetAttribute("__SpectreCustomSound") then
                     local previous = snapshot[obj]
                     local fresh = previous == nil
                     pcall(function()
@@ -14406,7 +14406,7 @@ run(function()
     end
 
     local function stopDefaultShootSound(obj)
-        if obj and obj:IsA("Sound") and not obj:GetAttribute("__LionCustomSound") then
+        if obj and obj:IsA("Sound") and not obj:GetAttribute("__SpectreCustomSound") then
             pcall(function()
                 obj.Volume = 0
                 obj:Stop()
@@ -14486,9 +14486,9 @@ run(function()
         local playerGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
         if playerGui then
             for _, obj in ipairs(playerGui:GetDescendants()) do
-                if obj.Name == "__LionVMWireframe"
-                    or obj.Name == "__LionVMMeshWireframe"
-                    or obj.Name == "__LionVMWireframeBox" then
+                if obj.Name == "__SpectreVMWireframe"
+                    or obj.Name == "__SpectreVMMeshWireframe"
+                    or obj.Name == "__SpectreVMWireframeBox" then
                     releaseWireframe(obj)
                 end
             end
@@ -15085,7 +15085,7 @@ run(function()
     local function createDamageText(position, damage)
         if not position then return end
         local part = Instance.new("Part")
-        part.Name = "LionHitDamageText"
+        part.Name = "SpectreHitDamageText"
         part.Anchored = true
         part.CanCollide = false
         part.CanQuery = false
@@ -15126,7 +15126,7 @@ run(function()
     local function createHitEffect(position, damage, hitPart)
         if not (HitEffectEnabled and HitEffectEnabled.Enabled and position) then return end
         local part = Instance.new("Part")
-        part.Name = "LionHitEffect"
+        part.Name = "SpectreHitEffect"
         part.Anchored = not (HitEffectWeld and HitEffectWeld.Enabled and hitPart and hitPart:IsA("BasePart"))
         part.CanCollide = false
         part.CanQuery = false
@@ -15162,7 +15162,7 @@ run(function()
         if type(selected) ~= "table" then selected = {} end
         if next(selected) == nil or multiHas(selected, "Ring") or multiHas(selected, "Filled Circle") or multiHas(selected, "Ripple") then
             local orb = Instance.new("Part")
-            orb.Name = "LionHitRing"
+            orb.Name = "SpectreHitRing"
             orb.Shape = Enum.PartType.Ball
             orb.Anchored = true
             orb.CanCollide = false
@@ -15190,7 +15190,7 @@ run(function()
         if multiHas(selected, "Blades") or multiHas(selected, "slashes") or multiHas(selected, "Zap") then
             for i = 1, 4 do
                 local slash = Instance.new("Part")
-                slash.Name = "LionHitSlash"
+                slash.Name = "SpectreHitSlash"
                 slash.Anchored = true
                 slash.CanCollide = false
                 slash.CanQuery = false
@@ -15227,7 +15227,7 @@ run(function()
         if (endPos - startPos).Magnitude < 0.5 then return end
 
         local p0 = Instance.new("Part")
-        p0.Name = "LionCustomTracerStart"
+        p0.Name = "SpectreCustomTracerStart"
         p0.Anchored = true
         p0.CanCollide = false
         p0.CanQuery = false
@@ -15238,7 +15238,7 @@ run(function()
         p0.Parent = workspace
 
         local p1 = p0:Clone()
-        p1.Name = "LionCustomTracerEnd"
+        p1.Name = "SpectreCustomTracerEnd"
         p1.Position = endPos
         p1.Parent = workspace
 
@@ -15756,22 +15756,22 @@ run(function()
     local ViewmodelGroup = Render:AddModule({Name = "viewmodel", HideEnabled = true})
     local CosmeticChangerToggle
     CosmeticChangerToggle = ViewmodelGroup:AddToggle({Name = "show cosmetics changer", Function = function(callback)
-        shared.LionCosmeticChangerToggle = CosmeticChangerToggle
+        shared.SpectreCosmeticChangerToggle = CosmeticChangerToggle
         if callback then
             task.spawn(function()
                 for _ = 1, 80 do
-                    if shared.LionCosmeticChanger and shared.LionCosmeticChanger.SetVisible then
-                        shared.LionCosmeticChanger.SetVisible(true)
+                    if shared.SpectreCosmeticChanger and shared.SpectreCosmeticChanger.SetVisible then
+                        shared.SpectreCosmeticChanger.SetVisible(true)
                         return
                     end
                     task.wait(0.05)
                 end
             end)
-        elseif shared.LionCosmeticChanger and shared.LionCosmeticChanger.SetVisible then
-            shared.LionCosmeticChanger.SetVisible(false)
+        elseif shared.SpectreCosmeticChanger and shared.SpectreCosmeticChanger.SetVisible then
+            shared.SpectreCosmeticChanger.SetVisible(false)
         end
     end})
-    shared.LionCosmeticChangerToggle = CosmeticChangerToggle
+    shared.SpectreCosmeticChangerToggle = CosmeticChangerToggle
     VMDisabled = ViewmodelGroup:AddDropdown({Name = "disable", List = viewmodelDisableList, Default = {}, Multi = true, Function = function()
         installViewmodelHooks()
         if disableSelected("aiming animation") then installAimingHooks() end
@@ -16134,14 +16134,14 @@ run(function()
 		end
 	end)
 
-	local nameSpoofState = getgenv().__LionNameSpoofState
+	local nameSpoofState = getgenv().__SpectreNameSpoofState
 	if not nameSpoofState then
 		nameSpoofState = {
 			Enabled = false,
 			Name = "",
 			Player = LocalPlayer,
 		}
-		getgenv().__LionNameSpoofState = nameSpoofState
+		getgenv().__SpectreNameSpoofState = nameSpoofState
 
 		if hookmetamethod then
 			local oldIndex
@@ -16932,7 +16932,7 @@ run(function()
         local description = humanoid:FindFirstChildOfClass("HumanoidDescription")
         if not description then return nil end
 
-        local emoteName = "LionAnimationPlayer"
+        local emoteName = "SpectreAnimationPlayer"
         local captured
         local connection = animator.AnimationPlayed:Connect(function(track)
             captured = track
@@ -17523,7 +17523,7 @@ run(function()
         return true
     end
 
-    getgenv().__LionApplyMovementVelocity = applyMovementVelocity
+    getgenv().__SpectreApplyMovementVelocity = applyMovementVelocity
 
     local function restoreSlideBoost()
         for fighter, value in pairs(state.SlideOriginals) do
@@ -19367,7 +19367,7 @@ run(function()
                 end
 
                 local function applyExternalMovementVelocity()
-                    local fn = getgenv and getgenv().__LionApplyMovementVelocity
+                    local fn = getgenv and getgenv().__SpectreApplyMovementVelocity
                     if type(fn) == "function" then
                         pcall(fn)
                     end
@@ -20594,7 +20594,7 @@ local cacheExpire, cache = 0, nil
 
 -- ??類ㅼ ??筌뤿굝由??? ??
 local function serverHop(pointer, filter)
-    visited = shared.Modernserverhoplist and shared.Modernserverhoplist:split('/') or {}
+    visited = shared.SpectreServerHopList and shared.SpectreServerHopList:split('/') or {}
     
     if not table.find(visited, game.JobId) then
         table.insert(visited, game.JobId)
@@ -21113,7 +21113,7 @@ run(function()
     end
 
     local function applySkybox(name, enabled)
-        local sky = getEffect("Sky", "LionSkybox")
+        local sky = getEffect("Sky", "SpectreSkybox")
         setSkyboxIds(sky, name)
 
         if not enabled then
@@ -21216,7 +21216,7 @@ run(function()
     local function ensureWeather()
         if WorldVisualState.WeatherPart then return WorldVisualState.WeatherPart, WorldVisualState.WeatherEmitter end
         local part = Instance.new("Part")
-        part.Name = "LionWorldWeather"
+        part.Name = "SpectreWorldWeather"
         part.Anchored = true
         part.CanCollide = false
         part.Transparency = 1
@@ -21323,7 +21323,7 @@ run(function()
     local function ensureAmbience()
         if WorldVisualState.AmbienceSound then return WorldVisualState.AmbienceSound end
         local sound = Instance.new("Sound")
-        sound.Name = "LionWorldAmbience"
+        sound.Name = "SpectreWorldAmbience"
         sound.Looped = true
         sound.Parent = SoundService
         WorldVisualState.AmbienceSound = sound
@@ -21371,7 +21371,7 @@ run(function()
         Name = "Color Correction",
         Color = Color3.fromRGB(255, 255, 255),
         Function = function(callback)
-            local effect = getEffect("ColorCorrectionEffect", "LionColorCorrection")
+            local effect = getEffect("ColorCorrectionEffect", "SpectreColorCorrection")
             effect.Parent = Lighting
             effect.Enabled = callback
             setProperty(effect, "TintColor", ColorCorrectionModule.Value or Color3.fromRGB(255, 255, 255))
@@ -21381,7 +21381,7 @@ run(function()
             if callback then
                 connectThrottled(ColorCorrectionModule, 0.2, function()
                     if not (Saturation and Contrast and BrightnessCC) then return end
-                    local e = getEffect("ColorCorrectionEffect", "LionColorCorrection")
+                    local e = getEffect("ColorCorrectionEffect", "SpectreColorCorrection")
                     e.Parent = Lighting
                     e.Enabled = true
                     setProperty(e, "TintColor", ColorCorrectionModule.Value or Color3.fromRGB(255, 255, 255))
@@ -21393,19 +21393,19 @@ run(function()
         end
     })
     Saturation = ColorCorrectionModule:AddSlider({Name = "Saturation", Min = -2, Max = 2, Default = 0, Decimal = 10, Function = function(v)
-        local effect = getEffect("ColorCorrectionEffect", "LionColorCorrection")
+        local effect = getEffect("ColorCorrectionEffect", "SpectreColorCorrection")
         effect.Parent = Lighting
         setProperty(effect, "Saturation", v)
         effect.Enabled = ColorCorrectionModule.Enabled
     end})
     Contrast = ColorCorrectionModule:AddSlider({Name = "Contrast", Min = -2, Max = 2, Default = 0, Decimal = 10, Function = function(v)
-        local effect = getEffect("ColorCorrectionEffect", "LionColorCorrection")
+        local effect = getEffect("ColorCorrectionEffect", "SpectreColorCorrection")
         effect.Parent = Lighting
         setProperty(effect, "Contrast", v)
         effect.Enabled = ColorCorrectionModule.Enabled
     end})
     BrightnessCC = ColorCorrectionModule:AddSlider({Name = "Brightness", Min = -2, Max = 2, Default = 0, Decimal = 10, Function = function(v)
-        local effect = getEffect("ColorCorrectionEffect", "LionColorCorrection")
+        local effect = getEffect("ColorCorrectionEffect", "SpectreColorCorrection")
         effect.Parent = Lighting
         setProperty(effect, "Brightness", v)
         effect.Enabled = ColorCorrectionModule.Enabled
@@ -21416,7 +21416,7 @@ run(function()
         Name = "Atmosphere",
         Colors = {Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 255, 255)},
         Function = function(callback)
-            local atmosphere = getEffect("Atmosphere", "LionAtmosphere")
+            local atmosphere = getEffect("Atmosphere", "SpectreAtmosphere")
             atmosphere.Parent = callback and Lighting or nil
             setProperty(atmosphere, "Color", AtmosphereModule.Colors and AtmosphereModule.Colors[1] or Color3.fromRGB(255, 255, 255))
             setProperty(atmosphere, "Decay", AtmosphereModule.Colors and AtmosphereModule.Colors[2] or Color3.fromRGB(255, 255, 255))
@@ -21427,7 +21427,7 @@ run(function()
             if callback then
                 connectThrottled(AtmosphereModule, 0.2, function()
                     if not (Glare and Haze and Offset and Density) then return end
-                    local a = getEffect("Atmosphere", "LionAtmosphere")
+                    local a = getEffect("Atmosphere", "SpectreAtmosphere")
                     a.Parent = Lighting
                     setProperty(a, "Color", AtmosphereModule.Colors and AtmosphereModule.Colors[1] or Color3.fromRGB(255, 255, 255))
                     setProperty(a, "Decay", AtmosphereModule.Colors and AtmosphereModule.Colors[2] or Color3.fromRGB(255, 255, 255))
@@ -21439,10 +21439,10 @@ run(function()
             end
         end
     })
-    Glare = AtmosphereModule:AddSlider({Name = "Glare", Min = 0, Max = 10, Default = 1.5, Decimal = 10, Function = function(v) local a = getEffect("Atmosphere", "LionAtmosphere"); setProperty(a, "Glare", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
-    Haze = AtmosphereModule:AddSlider({Name = "Haze", Min = 0, Max = 10, Default = 10, Decimal = 10, Function = function(v) local a = getEffect("Atmosphere", "LionAtmosphere"); setProperty(a, "Haze", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
-    Offset = AtmosphereModule:AddSlider({Name = "Offset", Min = 0, Max = 1, Default = 0.4, Decimal = 100, Function = function(v) local a = getEffect("Atmosphere", "LionAtmosphere"); setProperty(a, "Offset", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
-    Density = AtmosphereModule:AddSlider({Name = "Density", Min = 0, Max = 1, Default = 0.5, Decimal = 100, Function = function(v) local a = getEffect("Atmosphere", "LionAtmosphere"); setProperty(a, "Density", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
+    Glare = AtmosphereModule:AddSlider({Name = "Glare", Min = 0, Max = 10, Default = 1.5, Decimal = 10, Function = function(v) local a = getEffect("Atmosphere", "SpectreAtmosphere"); setProperty(a, "Glare", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
+    Haze = AtmosphereModule:AddSlider({Name = "Haze", Min = 0, Max = 10, Default = 10, Decimal = 10, Function = function(v) local a = getEffect("Atmosphere", "SpectreAtmosphere"); setProperty(a, "Haze", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
+    Offset = AtmosphereModule:AddSlider({Name = "Offset", Min = 0, Max = 1, Default = 0.4, Decimal = 100, Function = function(v) local a = getEffect("Atmosphere", "SpectreAtmosphere"); setProperty(a, "Offset", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
+    Density = AtmosphereModule:AddSlider({Name = "Density", Min = 0, Max = 1, Default = 0.5, Decimal = 100, Function = function(v) local a = getEffect("Atmosphere", "SpectreAtmosphere"); setProperty(a, "Density", v); a.Parent = AtmosphereModule.Enabled and Lighting or nil end})
 
     local LightingModule, Ambient, OutdoorAmbient, ColorShiftBottom, ColorShiftTop, FogColor, FogEnd, FogEndValue, FogStart, FogStartValue, Exposure, ExposureValue, LightingBrightness, LightingBrightnessValue, ClockTime, ClockTimeValue, GlobalShadows
     local lightingProps = {Ambient = true, OutdoorAmbient = true, ColorShift_Bottom = true, ColorShift_Top = true, FogColor = true, FogEnd = true, FogStart = true, ExposureCompensation = true, Brightness = true, ClockTime = true, GlobalShadows = true}
@@ -21513,7 +21513,7 @@ run(function()
         applySkybox(SelectedSkybox.Value, callback)
         if callback then
             SkyboxModule:Clean(Lighting.ChildAdded:Connect(function(child)
-                local sky = getEffect("Sky", "LionSkybox")
+                local sky = getEffect("Sky", "SpectreSkybox")
                 if SkyboxModule.Enabled and child:IsA("Sky") and child ~= sky then
                     task.defer(function()
                         applySkybox(SelectedSkybox.Value, true)
@@ -21521,7 +21521,7 @@ run(function()
                 end
             end))
             connectThrottled(SkyboxModule, 0.5, function()
-                local sky = getEffect("Sky", "LionSkybox")
+                local sky = getEffect("Sky", "SpectreSkybox")
                 if SkyboxModule.Enabled and sky.Parent ~= Lighting then
                     applySkybox(SelectedSkybox.Value, true)
                 end
@@ -21588,13 +21588,13 @@ run(function()
 
     local BloomModule, BloomIntensity, BloomSize, BloomThreshold
     BloomModule = Movement:AddModule({Name = "Bloom", Function = function(callback)
-        local e = getEffect("BloomEffect", "LionBloom")
+        local e = getEffect("BloomEffect", "SpectreBloom")
         e.Parent = Lighting
         e.Enabled = callback
         if callback then
             connectThrottled(BloomModule, 0.2, function()
                 if not (BloomIntensity and BloomSize and BloomThreshold) then return end
-                local effect = getEffect("BloomEffect", "LionBloom")
+                local effect = getEffect("BloomEffect", "SpectreBloom")
                 effect.Parent = Lighting
                 effect.Enabled = true
                 setProperty(effect, "Intensity", BloomIntensity.Value)
@@ -21603,19 +21603,19 @@ run(function()
             end)
         end
     end})
-    BloomIntensity = BloomModule:AddSlider({Name = "Intensity", Min = 0, Max = 5, Default = 0.6, Decimal = 10, Function = function(v) local e = getEffect("BloomEffect", "LionBloom"); e.Parent = Lighting; setProperty(e, "Intensity", v); e.Enabled = BloomModule.Enabled end})
-    BloomSize = BloomModule:AddSlider({Name = "Size", Min = 0, Max = 100, Default = 26, Function = function(v) local e = getEffect("BloomEffect", "LionBloom"); e.Parent = Lighting; setProperty(e, "Size", v); e.Enabled = BloomModule.Enabled end})
-    BloomThreshold = BloomModule:AddSlider({Name = "Threshold", Min = 0, Max = 5, Default = 0.4, Decimal = 10, Function = function(v) local e = getEffect("BloomEffect", "LionBloom"); e.Parent = Lighting; setProperty(e, "Threshold", v); e.Enabled = BloomModule.Enabled end})
+    BloomIntensity = BloomModule:AddSlider({Name = "Intensity", Min = 0, Max = 5, Default = 0.6, Decimal = 10, Function = function(v) local e = getEffect("BloomEffect", "SpectreBloom"); e.Parent = Lighting; setProperty(e, "Intensity", v); e.Enabled = BloomModule.Enabled end})
+    BloomSize = BloomModule:AddSlider({Name = "Size", Min = 0, Max = 100, Default = 26, Function = function(v) local e = getEffect("BloomEffect", "SpectreBloom"); e.Parent = Lighting; setProperty(e, "Size", v); e.Enabled = BloomModule.Enabled end})
+    BloomThreshold = BloomModule:AddSlider({Name = "Threshold", Min = 0, Max = 5, Default = 0.4, Decimal = 10, Function = function(v) local e = getEffect("BloomEffect", "SpectreBloom"); e.Parent = Lighting; setProperty(e, "Threshold", v); e.Enabled = BloomModule.Enabled end})
 
     local SunRaysModule, SunRaysEnabled, SunIntensity, SunSpread
     SunRaysModule = Movement:AddModule({Name = "Sun Rays", Function = function(callback)
-        local e = getEffect("SunRaysEffect", "LionSunRays")
+        local e = getEffect("SunRaysEffect", "SpectreSunRays")
         e.Parent = Lighting
         e.Enabled = callback and SunRaysEnabled.Enabled
         if callback then
             connectThrottled(SunRaysModule, 0.2, function()
                 if not (SunRaysEnabled and SunIntensity and SunSpread) then return end
-                local effect = getEffect("SunRaysEffect", "LionSunRays")
+                local effect = getEffect("SunRaysEffect", "SpectreSunRays")
                 effect.Parent = Lighting
                 effect.Enabled = SunRaysEnabled.Enabled
                 setProperty(effect, "Intensity", SunIntensity.Value)
@@ -21623,9 +21623,9 @@ run(function()
             end)
         end
     end})
-    SunRaysEnabled = SunRaysModule:AddToggle({Name = "override", Function = function(v) local e = getEffect("SunRaysEffect", "LionSunRays"); e.Parent = Lighting; e.Enabled = SunRaysModule.Enabled and v end})
-    SunIntensity = SunRaysModule:AddSlider({Name = "Intensity", Min = 0, Max = 1, Default = 0.25, Decimal = 100, Function = function(v) local e = getEffect("SunRaysEffect", "LionSunRays"); e.Parent = Lighting; setProperty(e, "Intensity", v); e.Enabled = SunRaysModule.Enabled and SunRaysEnabled.Enabled end})
-    SunSpread = SunRaysModule:AddSlider({Name = "Spread", Min = 0, Max = 1, Default = 1, Decimal = 100, Function = function(v) local e = getEffect("SunRaysEffect", "LionSunRays"); e.Parent = Lighting; setProperty(e, "Spread", v); e.Enabled = SunRaysModule.Enabled and SunRaysEnabled.Enabled end})
+    SunRaysEnabled = SunRaysModule:AddToggle({Name = "override", Function = function(v) local e = getEffect("SunRaysEffect", "SpectreSunRays"); e.Parent = Lighting; e.Enabled = SunRaysModule.Enabled and v end})
+    SunIntensity = SunRaysModule:AddSlider({Name = "Intensity", Min = 0, Max = 1, Default = 0.25, Decimal = 100, Function = function(v) local e = getEffect("SunRaysEffect", "SpectreSunRays"); e.Parent = Lighting; setProperty(e, "Intensity", v); e.Enabled = SunRaysModule.Enabled and SunRaysEnabled.Enabled end})
+    SunSpread = SunRaysModule:AddSlider({Name = "Spread", Min = 0, Max = 1, Default = 1, Decimal = 100, Function = function(v) local e = getEffect("SunRaysEffect", "SpectreSunRays"); e.Parent = Lighting; setProperty(e, "Spread", v); e.Enabled = SunRaysModule.Enabled and SunRaysEnabled.Enabled end})
 
     local CameraModule, AntiFlashbang, AntiSmoke, FOVChanger, FOVValue, AspectRatio, RatioX, RatioY, Blur
     local function installAntiFlashbang()
@@ -21683,18 +21683,18 @@ run(function()
         local camera = workspace.CurrentCamera
         if callback then
             if camera and not WorldVisualState.OriginalFOV then WorldVisualState.OriginalFOV = camera.FieldOfView end
-            shared.LionForceFOVEnabled = FOVChanger and FOVChanger.Enabled or false
-            shared.LionForceFOVValue = FOVValue and FOVValue.Value or (camera and camera.FieldOfView or 70)
+            shared.SpectreForceFOVEnabled = FOVChanger and FOVChanger.Enabled or false
+            shared.SpectreForceFOVValue = FOVValue and FOVValue.Value or (camera and camera.FieldOfView or 70)
             if AntiFlashbang and AntiFlashbang.Enabled then installAntiFlashbang() end
             setAntiSmoke(AntiSmoke and AntiSmoke.Enabled or false)
             pcall(function()
-                RunService:UnbindFromRenderStep("LionForceFOV")
+                RunService:UnbindFromRenderStep("SpectreForceFOV")
             end)
 			pcall(function()
-				RunService:BindToRenderStep("LionForceFOV", Enum.RenderPriority.Camera.Value + 1, function()
+				RunService:BindToRenderStep("SpectreForceFOV", Enum.RenderPriority.Camera.Value + 1, function()
 					local camObj = workspace.CurrentCamera
 					if not (camObj and CameraModule.Enabled) then
-						shared.LionForceFOVEnabled = false
+						shared.SpectreForceFOVEnabled = false
 						return
 					end
 					local aspectEnabled = AspectRatio and AspectRatio.Enabled
@@ -21703,38 +21703,38 @@ run(function()
 					if fovEnabled or aspectEnabled then
 						local finalFov = aspectEnabled and setAspectRatio(true, RatioX.Value, RatioY.Value, camObj, baseFov) or baseFov
 						camObj.FieldOfView = finalFov
-						shared.LionForceFOVEnabled = true
-						shared.LionForceFOVValue = finalFov
+						shared.SpectreForceFOVEnabled = true
+						shared.SpectreForceFOVValue = finalFov
 					elseif WorldVisualState.OriginalFOV then
-						shared.LionForceFOVEnabled = false
+						shared.SpectreForceFOVEnabled = false
 						camObj.FieldOfView = WorldVisualState.OriginalFOV
 						setAspectRatio(false, 1, 1, camObj, WorldVisualState.OriginalFOV)
 					else
-						shared.LionForceFOVEnabled = false
+						shared.SpectreForceFOVEnabled = false
 					end
 				end)
 			end)
 			CameraModule:Clean(function()
 				pcall(function()
-					RunService:UnbindFromRenderStep("LionForceFOV")
+					RunService:UnbindFromRenderStep("SpectreForceFOV")
 				end)
-				shared.LionForceFOVEnabled = false
+				shared.SpectreForceFOVEnabled = false
 			end)
 			connectThrottled(CameraModule, 0.2, function()
-				local blur = getEffect("BlurEffect", "LionCameraBlur")
+				local blur = getEffect("BlurEffect", "SpectreCameraBlur")
 				blur.Parent = Lighting
 				blur.Size = Blur and Blur.Value or 0
 				if AntiFlashbang and AntiFlashbang.Enabled then installAntiFlashbang() end
 			end)
         else
             pcall(function()
-                RunService:UnbindFromRenderStep("LionForceFOV")
+                RunService:UnbindFromRenderStep("SpectreForceFOV")
             end)
-            shared.LionForceFOVEnabled = false
+            shared.SpectreForceFOVEnabled = false
             if camera and WorldVisualState.OriginalFOV then camera.FieldOfView = WorldVisualState.OriginalFOV end
             WorldVisualState.OriginalFOV = nil
             setAspectRatio(false, 1, 1)
-            local blur = getEffect("BlurEffect", "LionCameraBlur")
+            local blur = getEffect("BlurEffect", "SpectreCameraBlur")
             blur.Size = 0
             blur.Parent = nil
             setAntiSmoke(false)
@@ -21745,48 +21745,48 @@ run(function()
     FOVChanger = CameraModule:AddToggle({Name = "fov changer", Default = true, Function = function(v)
         if CameraModule.Enabled and workspace.CurrentCamera then
             if v then
-                shared.LionForceFOVEnabled = true
-                shared.LionForceFOVValue = FOVValue.Value
+                shared.SpectreForceFOVEnabled = true
+                shared.SpectreForceFOVValue = FOVValue.Value
                 workspace.CurrentCamera.FieldOfView = FOVValue.Value
             elseif not v then
                 local baseFov = WorldVisualState.OriginalFOV or workspace.CurrentCamera.FieldOfView
-                shared.LionForceFOVEnabled = AspectRatio and AspectRatio.Enabled or false
-                shared.LionForceFOVValue = baseFov
+                shared.SpectreForceFOVEnabled = AspectRatio and AspectRatio.Enabled or false
+                shared.SpectreForceFOVValue = baseFov
                 workspace.CurrentCamera.FieldOfView = baseFov
             end
         end
     end})
     FOVValue = CameraModule:AddSlider({Name = "fov", Min = 1, Max = 120, Default = 120, Function = function(v)
         if CameraModule.Enabled and FOVChanger.Enabled and workspace.CurrentCamera then
-            shared.LionForceFOVEnabled = true
-            shared.LionForceFOVValue = v
+            shared.SpectreForceFOVEnabled = true
+            shared.SpectreForceFOVValue = v
             workspace.CurrentCamera.FieldOfView = v
         else
-            shared.LionForceFOVValue = v
+            shared.SpectreForceFOVValue = v
         end
     end})
     AspectRatio = CameraModule:AddToggle({Name = "aspect ratio", Function = function()
         if CameraModule.Enabled and workspace.CurrentCamera then
             local baseFov = FOVChanger.Enabled and FOVValue.Value or (WorldVisualState.OriginalFOV or workspace.CurrentCamera.FieldOfView)
-            shared.LionForceFOVEnabled = FOVChanger.Enabled or AspectRatio.Enabled
-            shared.LionForceFOVValue = baseFov
+            shared.SpectreForceFOVEnabled = FOVChanger.Enabled or AspectRatio.Enabled
+            shared.SpectreForceFOVValue = baseFov
             workspace.CurrentCamera.FieldOfView = baseFov
         end
     end})
     RatioX = CameraModule:AddSlider({Name = "ratio x", Min = 0.1, Max = 5, Default = 1, Decimal = 10, Function = function()
         if CameraModule.Enabled and workspace.CurrentCamera then
             local baseFov = FOVChanger.Enabled and FOVValue.Value or (WorldVisualState.OriginalFOV or workspace.CurrentCamera.FieldOfView)
-            shared.LionForceFOVValue = baseFov
+            shared.SpectreForceFOVValue = baseFov
         end
     end})
     RatioY = CameraModule:AddSlider({Name = "ratio y", Min = 0.1, Max = 5, Default = 0.65, Decimal = 10000, Function = function()
         if CameraModule.Enabled and workspace.CurrentCamera then
             local baseFov = FOVChanger.Enabled and FOVValue.Value or (WorldVisualState.OriginalFOV or workspace.CurrentCamera.FieldOfView)
-            shared.LionForceFOVValue = baseFov
+            shared.SpectreForceFOVValue = baseFov
         end
     end})
     Blur = CameraModule:AddSlider({Name = "blur", Min = 0, Max = 56, Default = 0, Function = function(v)
-        local blur = getEffect("BlurEffect", "LionCameraBlur")
+        local blur = getEffect("BlurEffect", "SpectreCameraBlur")
         blur.Parent = CameraModule.Enabled and Lighting or nil
         setProperty(blur, "Size", CameraModule.Enabled and v or 0)
     end})
@@ -22118,7 +22118,7 @@ run(function()
     local NotifySeconds
     local RandomNotifyText
     local MessageFormat
-    local state = getgenv().__LionUIHitNotifierState or {
+    local state = getgenv().__SpectreUIHitNotifierState or {
         Hooked = false,
         Enabled = false,
         OriginalDamageNumberEffect = nil,
@@ -22164,7 +22164,7 @@ run(function()
         state.LastNotifyTime = 0
         state.Version = 6
     end
-    getgenv().__LionUIHitNotifierState = state
+    getgenv().__SpectreUIHitNotifierState = state
 
     local function getCharacterFromInstance(inst)
         local current = inst
@@ -22374,9 +22374,9 @@ run(function()
     state.NotifyQueue = notifyQueue
 
     local function flushHitNotify(text, duration)
-        if type(LionLibrary) == "table" and type(LionLibrary.Notify) == "function" then
+        if type(SpectreLibrary) == "table" and type(SpectreLibrary.Notify) == "function" then
             local ok, err = pcall(function()
-                LionLibrary:Notify(text, duration)
+                SpectreLibrary:Notify(text, duration)
             end)
 
             if ok then
@@ -22606,7 +22606,7 @@ run(function()
     })
 end)
 
-shared.Modern = mainapi
+shared.Spectre = mainapi
 mainapi:StartBackgroundLoad()
 
 -- Auto config application is disabled; settings should not be loaded or enabled at startup.
