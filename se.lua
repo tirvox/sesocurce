@@ -1955,7 +1955,7 @@ function mainapi:CreateGUI()
     end)
 
     LionWindow = LionLibrary:CreateWindow({
-        Title = "Harion Enchantments - https://discord.gg/KXqBHaNXxX",
+        Title = "Spectre Enchantments - https://discord.gg/KXqBHaNXxX",
         Center = true,
         AutoShow = false,
         TabPadding = 6,
@@ -3041,9 +3041,9 @@ local function setRagebotStatus(enabled, target, voiding)
     shared.RagebotActive = enabled
     if not RagebotStatusMain then return end
 
-    local text = "Harion Rage : void"
+    local text = "Spectre Rage : void"
     if enabled and target and not voiding then
-        text = "Harion Rage : " .. (target.Name or "target")
+        text = "Spectre Rage : " .. (target.Name or "target")
     end
 
     if RagebotStatusLastText ~= text then
